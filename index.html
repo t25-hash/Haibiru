@@ -410,29 +410,7 @@ body {
   97%  { opacity: 0.3; }
   98%  { opacity: 1; }
 }
-.horror { animation: flicker 10s infinite; }
-
-/* LIFF非対応環境向けバナー */
-#liff-banner {
-  display: none;
-  position: fixed;
-  bottom: 60px;
-  left: 16px; right: 16px;
-  background: rgba(210,153,34,0.12);
-  border: 1px solid rgba(210,153,34,0.35);
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-size: 11px;
-  font-family: 'Share Tech Mono', monospace;
-  color: #d29922;
-  z-index: 50;
-  text-align: center;
-  letter-spacing: 0.04em;
-}
-</style>
-</head>
-<body>
-
+.horror { animation: flicker 10s 
 <!-- スプラッシュ -->
 <div id="splash">
   <div class="splash-eye">👁</div>
@@ -441,7 +419,6 @@ body {
   <div class="splash-dots"><span></span><span></span><span></span></div>
 </div>
 
-<!-- LIFF非対応バナー -->
 
 <!-- ヘッダー -->
 <div class="header">
@@ -468,7 +445,7 @@ body {
 // ============================================================
 // LIFF ID — ここを自分のLIFF IDに書き換える
 // ============================================================
-const LIFF_ID = 2009523759-K7t5SecV;
+const LIFF_ID = '2009523759-K7t5SecV';
 
 // ============================================================
 // ゲームシーン定義
