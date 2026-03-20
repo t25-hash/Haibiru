@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>深夜の廃ビル</title>
+<title>ゲームセレクト</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Share+Tech+Mono&display=swap');
 
 :root {
-  --bg: #080810;
-  --panel: #0e0e1a;
+  --bg: #07070f;
+  --surface: #0e0e1a;
   --border: #1c1c30;
   --red: #c0392b;
   --red-glow: #e74c3c;
@@ -21,685 +21,827 @@
   --safe-bot: env(safe-area-inset-bottom, 0px);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body { height:100%; overflow:hidden; background:var(--bg); }
 
 body {
-  background: var(--bg); color: var(--text);
-  font-family: 'Noto Serif JP', serif;
-  display: flex; flex-direction: column;
-  padding-top: var(--safe-top); padding-bottom: var(--safe-bot);
+  color:var(--text); font-family:'Noto Serif JP',serif;
+  display:flex; flex-direction:column;
+  padding-top:var(--safe-top); padding-bottom:var(--safe-bot);
 }
 
-/* スプラッシュ */
+/* ═══════════════════════════════
+   SPLASH
+═══════════════════════════════ */
 #splash {
-  position: fixed; inset: 0; background: var(--bg);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 20px; z-index: 100; transition: opacity 0.6s ease;
+  position:fixed; inset:0; background:var(--bg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:18px; z-index:200; transition:opacity 0.7s ease;
 }
-#splash.fade { opacity: 0; pointer-events: none; }
-.splash-eye { font-size: 52px; animation: eyePulse 2s ease-in-out infinite; }
-@keyframes eyePulse {
-  0%,100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(192,57,43,0.4)); }
-  50%      { transform: scale(1.1); filter: drop-shadow(0 0 20px rgba(192,57,43,0.8)); }
+#splash.fade { opacity:0; pointer-events:none; }
+
+.splash-icon { font-size:56px; animation:pulse 2.2s ease-in-out infinite; }
+@keyframes pulse {
+  0%,100% { transform:scale(1);   filter:drop-shadow(0 0 10px rgba(192,57,43,.4)); }
+  50%      { transform:scale(1.1); filter:drop-shadow(0 0 24px rgba(192,57,43,.9)); }
 }
-.splash-title { font-size: 22px; font-weight: 700; color: var(--white); letter-spacing: 0.08em; }
-.splash-sub   { font-size: 11px; color: var(--dim); font-family: 'Share Tech Mono', monospace; letter-spacing: 0.12em; }
-.splash-user  { font-size: 13px; color: var(--dim); font-family: 'Share Tech Mono', monospace; min-height: 18px; }
-.splash-dots  { display: flex; gap: 6px; }
+.splash-title { font-size:24px; font-weight:700; color:var(--white); letter-spacing:.1em; }
+.splash-sub   { font-size:11px; color:var(--dim); font-family:'Share Tech Mono',monospace; letter-spacing:.14em; }
+.splash-user  { font-size:13px; color:var(--dim); font-family:'Share Tech Mono',monospace; }
+.splash-dots  { display:flex; gap:7px; }
 .splash-dots span {
-  width: 6px; height: 6px; border-radius: 50%; background: var(--dim);
-  animation: dotBlink 1.2s infinite;
+  width:6px; height:6px; border-radius:50%; background:var(--dim);
+  animation:db 1.2s infinite;
 }
-.splash-dots span:nth-child(2) { animation-delay: 0.2s; }
-.splash-dots span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes dotBlink {
-  0%,80%,100% { opacity: 0.2; }
-  40% { opacity: 1; background: var(--red-glow); }
+.splash-dots span:nth-child(2){animation-delay:.2s}
+.splash-dots span:nth-child(3){animation-delay:.4s}
+@keyframes db {
+  0%,80%,100%{opacity:.2}
+  40%{opacity:1;background:var(--red-glow)}
 }
 
-/* ヘッダー */
-.header {
-  flex-shrink: 0; background: rgba(14,14,26,0.95);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(192,57,43,0.15);
-  padding: 10px 16px; display: flex; align-items: center; gap: 10px;
+/* ═══════════════════════════════
+   SCREENS (top / game)
+═══════════════════════════════ */
+.screen { display:none; flex-direction:column; height:100%; }
+.screen.active { display:flex; }
+
+/* ═══════════════════════════════
+   TOP SCREEN
+═══════════════════════════════ */
+#topScreen {
+  background:var(--bg);
+  overflow:hidden;
 }
-.header-avatar {
-  width: 32px; height: 32px; border-radius: 50%;
-  background: linear-gradient(135deg, #c0392b, #7d1a0e);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; flex-shrink: 0; box-shadow: 0 0 10px rgba(192,57,43,0.35);
+
+.top-header {
+  flex-shrink:0;
+  padding:14px 20px 10px;
+  display:flex; align-items:center; gap:10px;
+  border-bottom:1px solid rgba(192,57,43,.12);
+  background:rgba(14,14,26,.95);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
 }
-.header-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-.header-info { flex: 1; min-width: 0; }
-.header-title {
-  font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--white);
-  letter-spacing: 0.04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+.top-header-avatar {
+  width:34px; height:34px; border-radius:50%;
+  background:linear-gradient(135deg,#c0392b,#7d1a0e);
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; flex-shrink:0;
+  box-shadow:0 0 12px rgba(192,57,43,.4);
 }
-.header-sub { font-size: 10px; color: var(--dim); font-family: 'Share Tech Mono', monospace; }
-.header-hp { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--dim); text-align: right; flex-shrink: 0; }
-.hp-mini-bar { width: 48px; height: 3px; background: #1a1a2e; border-radius: 2px; overflow: hidden; margin-top: 3px; }
-.hp-mini-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease, background 0.5s; }
+.top-header-avatar img { width:100%; height:100%; border-radius:50%; object-fit:cover; }
+.top-header-info { flex:1; min-width:0; }
+.top-header-name {
+  font-family:'Share Tech Mono',monospace; font-size:13px; color:var(--white);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.top-header-sub { font-size:10px; color:var(--dim); font-family:'Share Tech Mono',monospace; letter-spacing:.06em; }
+
+.top-body {
+  flex:1; overflow-y:auto; padding:24px 0 20px;
+  display:flex; flex-direction:column; gap:0;
+}
+.top-body::-webkit-scrollbar { display:none; }
+
+/* タイトルテキスト */
+.top-catchcopy {
+  padding:0 20px 20px;
+  font-size:13px; color:var(--dim); line-height:1.8;
+  font-family:'Share Tech Mono',monospace; letter-spacing:.04em;
+}
+.top-catchcopy span { color:rgba(192,57,43,.7); }
+
+/* カルーセルラベル */
+.carousel-label {
+  padding:0 20px 10px;
+  font-size:10px; font-weight:700; color:var(--dim);
+  font-family:'Share Tech Mono',monospace; letter-spacing:.14em;
+  text-transform:uppercase;
+}
+
+/* カルーセル */
+.carousel-wrap {
+  position:relative; overflow:hidden;
+  padding:0 20px;
+}
+
+.carousel-track {
+  display:flex; gap:12px;
+  transition:transform .45s cubic-bezier(.22,1,.36,1);
+  will-change:transform;
+}
+
+/* シナリオカード */
+.scenario-card {
+  flex-shrink:0;
+  width:calc(100vw - 40px);
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  overflow:hidden;
+  position:relative;
+  cursor:pointer;
+  transition:transform .15s, box-shadow .15s;
+  -webkit-user-select:none; user-select:none;
+}
+.scenario-card:active { transform:scale(.98); }
+
+.card-art {
+  width:100%; height:180px;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+}
+
+/* カード1: 廃病院 */
+.art-hospital {
+  background:radial-gradient(ellipse at 50% 30%, #1a0a0a 0%, #07070f 70%);
+}
+.art-hospital::before {
+  content:''; position:absolute; inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(192,57,43,.04) 28px,rgba(192,57,43,.04) 29px),
+             repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(192,57,43,.04) 28px,rgba(192,57,43,.04) 29px);
+}
+
+/* カード2: 廃学校 */
+.art-school {
+  background:radial-gradient(ellipse at 50% 30%, #0a0e0a 0%, #07070f 70%);
+}
+.art-school::before {
+  content:''; position:absolute; inset:0;
+  background:repeating-linear-gradient(45deg,transparent,transparent 20px,rgba(46,120,46,.04) 20px,rgba(46,120,46,.04) 21px);
+}
+
+/* カード3: 廃旅館 */
+.art-inn {
+  background:radial-gradient(ellipse at 50% 30%, #0e0a06 0%, #07070f 70%);
+}
+.art-inn::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(circle at 30% 60%, rgba(180,130,50,.06) 0%, transparent 60%),
+             radial-gradient(circle at 70% 30%, rgba(180,130,50,.04) 0%, transparent 50%);
+}
+
+/* カード4: 海面漂流 */
+.art-ocean {
+  background:radial-gradient(ellipse at 50% 60%, #003030 0%, #001818 70%);
+}
+.art-ocean::before {
+  content:''; position:absolute; inset:0;
+  background:repeating-linear-gradient(
+    135deg,
+    transparent, transparent 18px,
+    rgba(0,220,180,.04) 18px, rgba(0,220,180,.04) 19px
+  );
+  animation:oceanShimmer 3s linear infinite;
+}
+@keyframes oceanShimmer {
+  0%   { background-position: 0 0; }
+  100% { background-position: 40px 40px; }
+}
+
+.card-art-icon {
+  font-size:64px; position:relative; z-index:1;
+  animation:artFloat 4s ease-in-out infinite;
+}
+@keyframes artFloat {
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
+
+.card-art-deco {
+  position:absolute; bottom:12px; left:0; right:0;
+  display:flex; justify-content:center; gap:8px; z-index:1;
+}
+.deco-dot {
+  width:4px; height:4px; border-radius:50%;
+  opacity:.4;
+}
+
+.card-body { padding:16px 18px 18px; }
+
+.card-num {
+  font-family:'Share Tech Mono',monospace; font-size:10px;
+  letter-spacing:.12em; margin-bottom:6px;
+  opacity:.5;
+}
+
+.card-title {
+  font-size:18px; font-weight:700; color:var(--white);
+  margin-bottom:4px; letter-spacing:.04em;
+}
+
+.card-subtitle {
+  font-size:11px; color:var(--dim); margin-bottom:12px;
+  font-family:'Share Tech Mono',monospace; letter-spacing:.06em;
+}
+
+.card-desc {
+  font-size:13px; color:var(--text); line-height:1.75; margin-bottom:14px;
+}
+
+.card-meta {
+  display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;
+}
+.card-tag {
+  font-family:'Share Tech Mono',monospace; font-size:10px;
+  padding:2px 8px; border-radius:20px;
+  letter-spacing:.06em;
+}
+
+.card-play-btn {
+  width:100%; padding:12px;
+  border:none; border-radius:12px;
+  font-family:'Noto Serif JP',serif; font-size:14px; font-weight:700;
+  cursor:pointer; letter-spacing:.06em;
+  transition:opacity .15s;
+}
+.card-play-btn:active { opacity:.8; }
+
+/* カルーセルドット */
+.carousel-dots {
+  display:flex; justify-content:center; gap:7px; padding:16px 0 4px;
+}
+.carousel-dot {
+  width:6px; height:6px; border-radius:3px;
+  background:var(--border); transition:all .3s ease; cursor:pointer;
+}
+.carousel-dot.active { width:20px; background:var(--red-glow); }
+
+/* ═══════════════════════════════
+   GAME SCREEN
+═══════════════════════════════ */
+#gameScreen { background:var(--bg); }
+
+.game-header {
+  flex-shrink:0;
+  background:rgba(14,14,26,.95);
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(192,57,43,.15);
+  padding:10px 14px;
+  display:flex; align-items:center; gap:10px;
+}
+.back-btn {
+  width:30px; height:30px; border-radius:50%;
+  background:var(--border); border:none;
+  color:var(--dim); font-size:14px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; transition:all .15s;
+}
+.back-btn:active { background:var(--red); color:#fff; }
+
+.game-header-info { flex:1; min-width:0; }
+.game-header-title {
+  font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--white);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:.04em;
+}
+.game-header-sub { font-size:10px; color:var(--dim); font-family:'Share Tech Mono',monospace; }
+
+.header-hp { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--dim); text-align:right; flex-shrink:0; }
+.hp-mini-bar { width:48px; height:3px; background:#1a1a2e; border-radius:2px; overflow:hidden; margin-top:3px; }
+.hp-mini-fill { height:100%; border-radius:2px; transition:width .6s ease,background .5s; }
 
 /* チャット */
 .chat {
-  flex: 1; overflow-y: auto; padding: 16px 14px 8px;
-  display: flex; flex-direction: column; gap: 9px;
-  scroll-behavior: smooth; overscroll-behavior: contain;
+  flex:1; overflow-y:auto; padding:14px 14px 8px;
+  display:flex; flex-direction:column; gap:9px;
+  scroll-behavior:smooth; overscroll-behavior:contain;
 }
-.chat::-webkit-scrollbar { width: 2px; }
-.chat::-webkit-scrollbar-thumb { background: var(--border); border-radius: 1px; }
+.chat::-webkit-scrollbar { width:2px; }
+.chat::-webkit-scrollbar-thumb { background:var(--border); border-radius:1px; }
 
 .bubble {
-  max-width: 84%; padding: 10px 13px; border-radius: 16px;
-  font-size: 14px; line-height: 1.75;
-  animation: fadeUp 0.32s cubic-bezier(0.22,1,0.36,1) both;
+  max-width:84%; padding:10px 13px; border-radius:16px;
+  font-size:14px; line-height:1.75;
+  animation:fadeUp .32s cubic-bezier(.22,1,.36,1) both;
 }
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
 }
 .bubble.bot {
-  background: #141425; border: 1px solid rgba(192,57,43,0.15);
-  border-bottom-left-radius: 3px; color: var(--text); align-self: flex-start;
+  background:#141425; border:1px solid rgba(192,57,43,.15);
+  border-bottom-left-radius:3px; color:var(--text); align-self:flex-start;
 }
 .bubble.user {
-  background: linear-gradient(135deg, #172917, #112011);
-  border: 1px solid rgba(46,204,113,0.18);
-  border-bottom-right-radius: 3px; color: #9ed09e; align-self: flex-end; font-size: 13px;
+  background:linear-gradient(135deg,#172917,#112011);
+  border:1px solid rgba(46,204,113,.18);
+  border-bottom-right-radius:3px; color:#9ed09e; align-self:flex-end; font-size:13px;
 }
 .bubble.system {
-  background: transparent; border: none; color: var(--dim);
-  font-size: 10px; font-family: 'Share Tech Mono', monospace;
-  letter-spacing: 0.1em; align-self: center; padding: 4px 0;
+  background:transparent; border:none; color:var(--dim);
+  font-size:10px; font-family:'Share Tech Mono',monospace;
+  letter-spacing:.1em; align-self:center; padding:4px 0;
 }
-/* グレイブルート専用 */
+/* グレイブルート */
 .bubble.grave {
-  background: #1a0f0f; border: 1px solid rgba(192,57,43,0.4);
-  border-bottom-left-radius: 3px; color: #d4a0a0; align-self: flex-start;
-  box-shadow: 0 0 20px rgba(192,57,43,0.1);
+  background:#1a0f0f; border:1px solid rgba(192,57,43,.4);
+  border-bottom-left-radius:3px; color:#d4a0a0; align-self:flex-start;
+  box-shadow:0 0 20px rgba(192,57,43,.1);
 }
 
 /* HP chip */
 .hp-chip {
-  align-self: flex-start; display: flex; align-items: center; gap: 8px;
-  padding: 7px 12px; background: rgba(192,57,43,0.06);
-  border: 1px solid rgba(192,57,43,0.2); border-radius: 10px;
-  font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--red-glow);
-  animation: fadeUp 0.3s ease both;
+  align-self:flex-start; display:flex; align-items:center; gap:8px;
+  padding:7px 12px; background:rgba(192,57,43,.06);
+  border:1px solid rgba(192,57,43,.2); border-radius:10px;
+  font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--red-glow);
+  animation:fadeUp .3s ease both;
 }
-.hp-chip-bar { height: 4px; width: 60px; background: #1a1a2e; border-radius: 2px; overflow: hidden; }
-.hp-chip-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+.hp-chip-bar { height:4px; width:60px; background:#1a1a2e; border-radius:2px; overflow:hidden; }
+.hp-chip-fill { height:100%; border-radius:2px; transition:width .5s ease; }
 
 /* タイピング */
 .typing {
-  display: flex; gap: 4px; align-items: center; padding: 11px 14px;
-  background: #141425; border: 1px solid rgba(192,57,43,0.12);
-  border-radius: 16px; border-bottom-left-radius: 3px;
-  align-self: flex-start; animation: fadeUp 0.28s ease both;
+  display:flex; gap:4px; align-items:center; padding:11px 14px;
+  background:#141425; border:1px solid rgba(192,57,43,.12);
+  border-radius:16px; border-bottom-left-radius:3px;
+  align-self:flex-start; animation:fadeUp .28s ease both;
 }
-.typing span { width: 5px; height: 5px; border-radius: 50%; background: var(--dim); animation: typingDot 1.1s infinite; }
-.typing span:nth-child(2) { animation-delay: 0.18s; }
-.typing span:nth-child(3) { animation-delay: 0.36s; }
-@keyframes typingDot {
-  0%,75%,100% { opacity: 0.25; transform: scale(0.8); }
-  35% { opacity: 1; transform: scale(1); }
+.typing span {
+  width:5px; height:5px; border-radius:50%; background:var(--dim);
+  animation:td 1.1s infinite;
+}
+.typing span:nth-child(2){animation-delay:.18s}
+.typing span:nth-child(3){animation-delay:.36s}
+@keyframes td {
+  0%,75%,100%{opacity:.25;transform:scale(.8)}
+  35%{opacity:1;transform:scale(1)}
 }
 
 /* 選択肢 */
 .choices {
-  flex-shrink: 0; padding: 10px 12px 12px;
-  display: flex; flex-direction: column; gap: 7px;
-  border-top: 1px solid var(--border);
-  background: rgba(8,8,16,0.9);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  flex-shrink:0; padding:10px 12px 12px;
+  display:flex; flex-direction:column; gap:7px;
+  border-top:1px solid var(--border);
+  background:rgba(7,7,15,.92);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
 }
 .choice-btn {
-  width: 100%; padding: 11px 14px; background: #10101e;
-  border: 1px solid var(--border); border-radius: 12px; color: var(--text);
-  font-family: 'Noto Serif JP', serif; font-size: 13px; cursor: pointer;
-  text-align: left; transition: all 0.18s ease; position: relative; overflow: hidden;
-  -webkit-appearance: none;
+  width:100%; padding:11px 14px; background:#10101e;
+  border:1px solid var(--border); border-radius:12px; color:var(--text);
+  font-family:'Noto Serif JP',serif; font-size:13px; cursor:pointer;
+  text-align:left; transition:all .18s ease; position:relative; overflow:hidden;
+  -webkit-appearance:none;
 }
 .choice-btn::before {
-  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
-  width: 2px; background: var(--red); opacity: 0; transition: opacity 0.18s;
+  content:''; position:absolute; left:0; top:0; bottom:0;
+  width:2px; background:var(--red); opacity:0; transition:opacity .18s;
 }
-.choice-btn:active { background: #1a1a2e; border-color: rgba(192,57,43,0.5); color: var(--white); transform: translateX(2px); }
-.choice-btn:active::before { opacity: 1; }
-.choice-btn:disabled { opacity: 0.25; pointer-events: none; }
+.choice-btn:active { background:#1a1a2e; border-color:rgba(192,57,43,.5); color:var(--white); transform:translateX(2px); }
+.choice-btn:active::before { opacity:1; }
+.choice-btn:disabled { opacity:.25; pointer-events:none; }
 
 /* エンドバナー */
 .end-banner {
-  align-self: center; text-align: center; padding: 16px 24px;
-  border-radius: 12px; font-size: 13px; line-height: 1.8;
-  animation: fadeUp 0.4s ease both; max-width: 90%;
+  align-self:center; text-align:center; padding:16px 24px;
+  border-radius:12px; font-size:13px; line-height:1.8;
+  animation:fadeUp .4s ease both; max-width:90%;
 }
-.end-clear { background: rgba(46,204,113,0.07); border: 1px solid rgba(46,204,113,0.25); color: #8ecc8e; }
-.end-dead  { background: rgba(192,57,43,0.07);  border: 1px solid rgba(192,57,43,0.25);  color: #cc8888; }
+.end-clear { background:rgba(46,204,113,.07); border:1px solid rgba(46,204,113,.25); color:#8ecc8e; }
+.end-dead  { background:rgba(192,57,43,.07);  border:1px solid rgba(192,57,43,.25);  color:#cc8888; }
 .end-badge {
-  display: inline-block; padding: 2px 10px; border-radius: 20px;
-  font-family: 'Share Tech Mono', monospace; font-size: 11px;
-  letter-spacing: 0.1em; margin-bottom: 8px;
+  display:inline-block; padding:2px 10px; border-radius:20px;
+  font-family:'Share Tech Mono',monospace; font-size:11px;
+  letter-spacing:.1em; margin-bottom:8px;
 }
-.badge-clear { background: rgba(46,204,113,0.15); color: #2ecc71; border: 1px solid rgba(46,204,113,0.35); }
-.badge-dead  { background: rgba(192,57,43,0.15); color: var(--red-glow); border: 1px solid rgba(192,57,43,0.35); }
+.badge-clear { background:rgba(46,204,113,.15); color:#2ecc71; border:1px solid rgba(46,204,113,.35); }
+.badge-dead  { background:rgba(192,57,43,.15);  color:var(--red-glow); border:1px solid rgba(192,57,43,.35); }
 
 /* エンドアクション */
 .end-actions {
-  flex-shrink: 0; padding: 10px 12px 12px;
-  display: flex; flex-direction: column; gap: 7px;
-  border-top: 1px solid var(--border); background: rgba(8,8,16,0.9);
+  flex-shrink:0; padding:10px 12px 12px;
+  display:flex; flex-direction:column; gap:7px;
+  border-top:1px solid var(--border); background:rgba(7,7,15,.92);
 }
 .btn-share {
-  width: 100%; padding: 12px;
-  background: linear-gradient(135deg, #06c755, #04a043);
-  border: none; border-radius: 12px; color: #fff;
-  font-family: 'Share Tech Mono', monospace; font-size: 13px;
-  letter-spacing: 0.06em; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.15s;
+  width:100%; padding:12px;
+  background:linear-gradient(135deg,#06c755,#04a043);
+  border:none; border-radius:12px; color:#fff;
+  font-family:'Share Tech Mono',monospace; font-size:13px;
+  letter-spacing:.06em; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:8px; transition:opacity .15s;
 }
-.btn-share:active { opacity: 0.8; }
-.btn-restart {
-  width: 100%; padding: 11px; background: transparent;
-  border: 1px solid rgba(192,57,43,0.35); border-radius: 12px;
-  color: rgba(192,57,43,0.8); font-family: 'Share Tech Mono', monospace;
-  font-size: 12px; letter-spacing: 0.1em; cursor: pointer; transition: all 0.15s;
+.btn-share:active { opacity:.8; }
+.btn-back-top {
+  width:100%; padding:11px; background:transparent;
+  border:1px solid var(--border); border-radius:12px;
+  color:var(--dim); font-family:'Share Tech Mono',monospace;
+  font-size:12px; letter-spacing:.1em; cursor:pointer; transition:all .15s;
 }
-.btn-restart:active { background: rgba(192,57,43,0.1); color: var(--red-glow); }
+.btn-back-top:active { background:var(--surface); color:var(--white); }
 
+/* アニメーション */
 @keyframes flicker {
-  0%,94%,100% { opacity: 1; } 95% { opacity: 0.5; } 96% { opacity: 0.9; } 97% { opacity: 0.3; }
+  0%,94%,100%{opacity:1} 95%{opacity:.5} 96%{opacity:.9} 97%{opacity:.3}
 }
-.horror { animation: flicker 10s infinite; }
+.horror { animation:flicker 10s infinite; }
 
 @keyframes flicker2 {
-  0%,88%,100% { opacity: 1; } 89% { opacity: 0.2; } 90% { opacity: 0.8; }
-  91% { opacity: 0.1; } 92% { opacity: 0.9; } 93% { opacity: 0.4; }
+  0%,88%,100%{opacity:1} 89%{opacity:.2} 90%{opacity:.8} 91%{opacity:.1} 92%{opacity:.9}
 }
-.grave-flicker { animation: flicker2 4s infinite; }
+.grave-flicker { animation:flicker2 4s infinite; }
 </style>
 </head>
 <body>
 
+<!-- SPLASH -->
 <div id="splash">
-  <div class="splash-eye">👁</div>
-  <div class="splash-title">深夜の廃ビル</div>
-  <div class="splash-sub">URBAN HORROR RPG</div>
+  <div class="splash-icon">👁</div>
+  <div class="splash-title">廃墟ホラーRPG</div>
+  <div class="splash-sub">URBAN HORROR ADVENTURE</div>
   <div class="splash-user" id="splashUser">読み込み中...</div>
   <div class="splash-dots"><span></span><span></span><span></span></div>
 </div>
 
-<div class="header">
-  <div class="header-avatar" id="headerAvatar">👁</div>
-  <div class="header-info">
-    <div class="header-title" id="headerName">深夜の廃ビル</div>
-    <div class="header-sub">都市ホラーRPG</div>
+<!-- TOP SCREEN -->
+<div id="topScreen" class="screen active">
+  <div class="top-header">
+    <div class="top-header-avatar" id="topAvatar">👁</div>
+    <div class="top-header-info">
+      <div class="top-header-name" id="topName">廃墟ホラーRPG</div>
+      <div class="top-header-sub">SCENARIO SELECT</div>
+    </div>
   </div>
-  <div class="header-hp">
-    <span id="hpLabel">HP 100</span>
-    <div class="hp-mini-bar">
-      <div class="hp-mini-fill" id="hpMiniFill" style="width:100%;background:#2ecc71"></div>
+
+  <div class="top-body">
+    <div class="top-catchcopy">
+      シナリオ・ゲームを選んでください。<br>
+      <span>あなたの選択が、結末を変える。</span>
+    </div>
+
+    <div class="carousel-label">— SELECT —</div>
+
+    <div class="carousel-wrap">
+      <div class="carousel-track" id="carouselTrack">
+
+        <!-- カード1: 深夜の廃病院 -->
+        <div class="scenario-card" onclick="startScenario('hospital')">
+          <div class="card-art art-hospital">
+            <div class="card-art-icon">🏚</div>
+            <div class="card-art-deco">
+              <div class="deco-dot" style="background:#c0392b"></div>
+              <div class="deco-dot" style="background:#c0392b"></div>
+              <div class="deco-dot" style="background:#c0392b"></div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-num">SCENARIO 01</div>
+            <div class="card-title">深夜の廃病院</div>
+            <div class="card-subtitle">ABANDONED HOSPITAL · MIDNIGHT</div>
+            <div class="card-desc">失踪した友人からのメッセージ。旧・聖和総合病院、5階——選択次第でGRAVEルートへ突入する。</div>
+            <div class="card-meta">
+              <span class="card-tag" style="background:rgba(192,57,43,.12);color:#c0392b;border:1px solid rgba(192,57,43,.3)">都市ホラー</span>
+              <span class="card-tag" style="background:rgba(188,140,255,.1);color:#bc8cff;border:1px solid rgba(188,140,255,.25)">GRAVEルートあり</span>
+              <span class="card-tag" style="background:rgba(80,80,96,.2);color:var(--dim);border:1px solid var(--border)">エンド×5</span>
+            </div>
+            <button class="card-play-btn" style="background:linear-gradient(135deg,#c0392b,#8e1a0e);color:#fff">
+              ▸ プレイする
+            </button>
+          </div>
+        </div>
+
+        <!-- カード2: 深夜の廃校 -->
+        <div class="scenario-card" onclick="startScenario('school')">
+          <div class="card-art art-school">
+            <div class="card-art-icon">🏫</div>
+            <div class="card-art-deco">
+              <div class="deco-dot" style="background:#2e7d32"></div>
+              <div class="deco-dot" style="background:#2e7d32"></div>
+              <div class="deco-dot" style="background:#2e7d32"></div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-num">SCENARIO 02</div>
+            <div class="card-title">深夜の廃校</div>
+            <div class="card-subtitle">ABANDONED SCHOOL · 3AM</div>
+            <div class="card-desc">「放課後に残ると消える」という都市伝説。廃校になった旧・青葉中学校に、弟が迷い込んだ。</div>
+            <div class="card-meta">
+              <span class="card-tag" style="background:rgba(46,125,50,.12);color:#4caf50;border:1px solid rgba(46,125,50,.3)">学校ホラー</span>
+              <span class="card-tag" style="background:rgba(80,80,96,.2);color:var(--dim);border:1px solid var(--border)">エンド×4</span>
+            </div>
+            <button class="card-play-btn" style="background:linear-gradient(135deg,#2e7d32,#1b5e20);color:#fff">
+              ▸ プレイする
+            </button>
+          </div>
+        </div>
+
+        <!-- カード3: 山奥の廃旅館 -->
+        <div class="scenario-card" onclick="startScenario('inn')">
+          <div class="card-art art-inn">
+            <div class="card-art-icon">🏯</div>
+            <div class="card-art-deco">
+              <div class="deco-dot" style="background:#b45309"></div>
+              <div class="deco-dot" style="background:#b45309"></div>
+              <div class="deco-dot" style="background:#b45309"></div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-num">SCENARIO 03</div>
+            <div class="card-title">山奥の廃旅館</div>
+            <div class="card-subtitle">MOUNTAIN INN · DEEP NIGHT</div>
+            <div class="card-desc">道に迷い、廃旅館で一夜を明かすことになった。帳場に残る宿泊者名簿——最後のページに、あなたの名前があった。</div>
+            <div class="card-meta">
+              <span class="card-tag" style="background:rgba(180,83,9,.12);color:#f59e0b;border:1px solid rgba(180,83,9,.3)">和風ホラー</span>
+              <span class="card-tag" style="background:rgba(80,80,96,.2);color:var(--dim);border:1px solid var(--border)">エンド×4</span>
+            </div>
+            <button class="card-play-btn" style="background:linear-gradient(135deg,#b45309,#78350f);color:#fff">
+              ▸ プレイする
+            </button>
+          </div>
+        </div>
+
+        <!-- カード4: 海面漂流ゲーム -->
+        <div class="scenario-card" onclick="startOceanGame()">
+          <div class="card-art art-ocean">
+            <div class="card-art-icon">🌊</div>
+            <div class="card-art-deco">
+              <div class="deco-dot" style="background:#00c8a8"></div>
+              <div class="deco-dot" style="background:#00c8a8"></div>
+              <div class="deco-dot" style="background:#00c8a8"></div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-num">GAME 01</div>
+            <div class="card-title">海面漂流</div>
+            <div class="card-subtitle">OCEAN TAP GAME · 60 SEC</div>
+            <div class="card-desc">エメラルドの海を漂うアイテムをタップして得点を稼げ！コンボで倍率UP。60秒の勝負。</div>
+            <div class="card-meta">
+              <span class="card-tag" style="background:rgba(0,200,168,.12);color:#00c8a8;border:1px solid rgba(0,200,168,.3)">タップゲーム</span>
+              <span class="card-tag" style="background:rgba(255,216,96,.1);color:#ffd060;border:1px solid rgba(255,216,96,.25)">ハイスコア狙い</span>
+            </div>
+            <button class="card-play-btn" style="background:linear-gradient(135deg,#008878,#00c8a8);color:#fff">
+              ▸ プレイする
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /carousel-track -->
+    </div><!-- /carousel-wrap -->
+
+    <div class="carousel-dots" id="carouselDots">
+      <div class="carousel-dot active" onclick="goToCard(0)"></div>
+      <div class="carousel-dot" onclick="goToCard(1)"></div>
+      <div class="carousel-dot" onclick="goToCard(2)"></div>
+      <div class="carousel-dot" onclick="goToCard(3)"></div>
+    </div>
+
+  </div><!-- /top-body -->
+</div><!-- /topScreen -->
+
+<!-- OCEAN GAME SCREEN -->
+<div id="oceanScreen" class="screen">
+  <canvas id="oceanCanvas" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;"></canvas>
+  <canvas id="oceanHud"    style="position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none;"></canvas>
+  <div id="oceanTap" style="position:absolute;inset:0;z-index:6;display:none;"></div>
+
+  <!-- UI Bar -->
+  <div style="position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:14px 16px;pointer-events:none;z-index:10;">
+    <div style="background:rgba(0,20,20,.65);backdrop-filter:blur(10px);border:1px solid rgba(0,220,180,.3);border-radius:14px;padding:9px 18px;color:#a0ffe0;">
+      <div style="font-size:9px;letter-spacing:4px;opacity:.6;text-transform:uppercase;font-family:'Share Tech Mono',monospace;">SCORE</div>
+      <div style="font-size:34px;line-height:1;font-weight:700;text-shadow:0 0 16px rgba(0,220,180,.6);color:#ffe880;" id="oceanSv">0</div>
+    </div>
+    <div style="background:rgba(0,20,20,.65);backdrop-filter:blur(10px);border:1px solid rgba(0,220,180,.3);border-radius:14px;padding:9px 18px;color:#a0ffe0;">
+      <div style="font-size:9px;letter-spacing:4px;opacity:.6;text-transform:uppercase;font-family:'Share Tech Mono',monospace;">TIME</div>
+      <div style="font-size:34px;line-height:1;font-weight:700;text-shadow:0 0 16px rgba(0,220,180,.6);color:#40ffd0;" id="oceanTv">60</div>
+    </div>
+  </div>
+  <div id="oceanCombo" style="position:absolute;top:44%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:clamp(26px,7vw,50px);font-weight:900;color:#ffe060;text-shadow:0 0 40px rgba(255,200,0,.9);pointer-events:none;z-index:10;transition:transform .15s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;">🔥 COMBO ×<span id="oceanCn">2</span></div>
+
+  <!-- Start overlay -->
+  <div id="oceanStartScr" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,20,20,.88);backdrop-filter:blur(18px);z-index:50;">
+    <button onclick="backToTop()" style="position:absolute;top:16px;left:16px;background:rgba(0,40,40,.7);border:1px solid rgba(0,200,160,.3);border-radius:10px;color:#80ffe0;font-size:13px;padding:8px 14px;cursor:pointer;font-family:'Share Tech Mono',monospace;">← もどる</button>
+    <h1 style="font-size:clamp(28px,8vw,52px);color:#40ffd0;text-shadow:0 0 40px rgba(0,220,160,.7);margin-bottom:10px;text-align:center;padding:0 20px;">🌊 海面漂流</h1>
+    <p style="color:#80ffe0;font-size:14px;line-height:1.7;text-align:center;padding:0 28px;margin-bottom:4px;">エメラルドの海を漂うアイテムをタップ！</p>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:360px;margin-top:14px;padding:0 20px;">
+      <div style="background:rgba(0,60,50,.5);border:1px solid rgba(0,200,160,.2);border-radius:10px;padding:5px 11px;font-size:12px;color:#80ffe0;display:flex;align-items:center;gap:6px;"><span style="font-size:19px;">🍾</span>瓶<span style="color:#ffd060;font-weight:700;">+10</span></div>
+      <div style="background:rgba(0,60,50,.5);border:1px solid rgba(0,200,160,.2);border-radius:10px;padding:5px 11px;font-size:12px;color:#80ffe0;display:flex;align-items:center;gap:6px;"><span style="font-size:19px;">📦</span>木箱<span style="color:#ffd060;font-weight:700;">+20</span></div>
+      <div style="background:rgba(0,60,50,.5);border:1px solid rgba(0,200,160,.2);border-radius:10px;padding:5px 11px;font-size:12px;color:#80ffe0;display:flex;align-items:center;gap:6px;"><span style="font-size:19px;">💎</span>宝石<span style="color:#ffd060;font-weight:700;">+50</span></div>
+      <div style="background:rgba(0,60,50,.5);border:1px solid rgba(0,200,160,.2);border-radius:10px;padding:5px 11px;font-size:12px;color:#80ffe0;display:flex;align-items:center;gap:6px;"><span style="font-size:19px;">🦀</span>カニ<span style="color:#ffd060;font-weight:700;">−5</span></div>
+      <div style="background:rgba(0,60,50,.5);border:1px solid rgba(0,200,160,.2);border-radius:10px;padding:5px 11px;font-size:12px;color:#80ffe0;display:flex;align-items:center;gap:6px;"><span style="font-size:19px;">⚓</span>錨<span style="color:#ffd060;font-weight:700;">+40</span></div>
+    </div>
+    <button id="oceanStartBtn" style="margin-top:22px;padding:15px 52px;background:linear-gradient(135deg,#008878,#00c8a8);color:#fff;font-size:18px;font-weight:700;border:none;border-radius:50px;cursor:pointer;box-shadow:0 4px 30px rgba(0,200,160,.5);">START</button>
+  </div>
+
+  <!-- Result overlay -->
+  <div id="oceanResultScr" style="position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,20,20,.88);backdrop-filter:blur(18px);z-index:50;">
+    <h1 style="font-size:clamp(28px,8vw,52px);color:#40ffd0;text-shadow:0 0 40px rgba(0,220,160,.7);margin-bottom:10px;">⚓ 結果</h1>
+    <div style="font-size:clamp(52px,16vw,100px);font-weight:900;color:#ffd060;text-shadow:0 0 60px rgba(255,180,0,.8);margin:12px 0;" id="oceanFsc">0</div>
+    <p style="color:#80ffe0;font-size:14px;text-align:center;padding:0 28px;" id="oceanRmsg"></p>
+    <div style="display:flex;gap:12px;margin-top:22px;">
+      <button id="oceanRetryBtn" style="padding:15px 36px;background:linear-gradient(135deg,#008878,#00c8a8);color:#fff;font-size:16px;font-weight:700;border:none;border-radius:50px;cursor:pointer;box-shadow:0 4px 30px rgba(0,200,160,.5);">もう一度</button>
+      <button onclick="backToTop()" style="padding:15px 36px;background:rgba(0,40,40,.8);border:1px solid rgba(0,200,160,.3);color:#80ffe0;font-size:16px;font-weight:700;border-radius:50px;cursor:pointer;">もどる</button>
     </div>
   </div>
 </div>
-
-<div class="chat" id="chat"></div>
-<div class="choices" id="choices"></div>
+<div id="gameScreen" class="screen">
+  <div class="game-header">
+    <button class="back-btn" onclick="backToTop()" title="トップへ戻る">←</button>
+    <div class="game-header-info">
+      <div class="game-header-title" id="gameTitle">深夜の廃病院</div>
+      <div class="game-header-sub" id="gameSubtitle">都市ホラーRPG</div>
+    </div>
+    <div class="header-hp">
+      <span id="hpLabel">HP 100</span>
+      <div class="hp-mini-bar">
+        <div class="hp-mini-fill" id="hpMiniFill" style="width:100%;background:#2ecc71"></div>
+      </div>
+    </div>
+  </div>
+  <div class="chat" id="chat"></div>
+  <div class="choices" id="choices"></div>
+</div>
 
 <script>
 const LIFF_ID = '2009523759-K7t5SecV';
 
-// ============================================================
-// シーン定義
-// ============================================================
-const SCENES = {
+// ══════════════════════════════════════════════
+// カルーセル
+// ══════════════════════════════════════════════
+let currentCard = 0;
+const totalCards = 4;
 
-  // ── CHAPTER 1 ──
-  start: {
-    text: [
-      '午前2時。スマホが鳴った。',
-      '「助けて……廃ビルの5階にいる。もう動けない」\n\n送り主は1ヶ月前に失踪した友人・ユウキだった。',
-      '今、あなたはそのビルの前に立っている。\n錆びた鉄扉が、風もないのに軋んでいた。\n\n地面に看板が落ちている。\n「旧・聖和総合病院」'
-    ],
-    choices: [
-      { label: '中に入る', next: 'enter' },
-      { label: '警察に電話してから入る', next: 'police' }
-    ]
+function goToCard(idx) {
+  currentCard = idx;
+  const track = document.getElementById('carouselTrack');
+  const cardW = track.children[0].offsetWidth + 12;
+  track.style.transform = `translateX(-${idx * cardW}px)`;
+  document.querySelectorAll('.carousel-dot').forEach((d,i) => {
+    d.classList.toggle('active', i === idx);
+  });
+}
+
+// スワイプ対応
+(function(){
+  const wrap = document.querySelector('.carousel-wrap');
+  let startX = 0, moved = false;
+  wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; moved = false; }, {passive:true});
+  wrap.addEventListener('touchmove',  e => { if(Math.abs(e.touches[0].clientX - startX) > 10) moved = true; }, {passive:true});
+  wrap.addEventListener('touchend',   e => {
+    if(!moved) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    if(dx < -40 && currentCard < totalCards-1) goToCard(currentCard+1);
+    if(dx >  40 && currentCard > 0)            goToCard(currentCard-1);
+  });
+})();
+
+// ══════════════════════════════════════════════
+// シナリオデータ
+// ══════════════════════════════════════════════
+
+// ── シナリオ1: 廃病院 ──────────────────────
+const HOSPITAL_SCENES = {
+  start:{text:['午前2時。スマホが鳴った。','「助けて……廃ビルの5階にいる。もう動けない」\n\n送り主は1ヶ月前に失踪した友人・ユウキだった。','今、あなたはそのビルの前に立っている。\n錆びた鉄扉が、風もないのに軋んでいた。\n\n地面に看板が落ちている。\n「旧・聖和総合病院」'],choices:[{label:'中に入る',next:'enter'},{label:'警察に電話してから入る',next:'police'}]},
+  police:{text:['「もしもし、廃ビルで——」\n電話が繋がった瞬間、画面が真っ黒になった。','電池は満タンのはずだ。スマホを再起動しても電話アプリだけ起動しない。','……一人で入るしかない。'],choices:[{label:'意を決して入る',next:'enter'}]},
+  enter:{text:['鉄扉をくぐると、薄暗い廊下が伸びていた。\n廃材と腐った木の匂い。','足元に古い人形が落ちている。\n病院の患者服を着ていた。目が合った気がした。','奥に進むと分岐点がある。\nエレベーターと、階段。'],choices:[{label:'エレベーターを使う',next:'elevator'},{label:'階段を上る',next:'stairs'}]},
+  elevator:{hpDelta:-20,text:['廃病院に電気が通っている。ボタンを押すと扉が開いた。','5階を押す。ゆっくりと上昇する。\n\n正面の鏡を見た。\n自分の姿が——2つ映っていた。','もう1人の自分は、こちらに向かって手を振っていた。\nあなたは手を振っていない。'],choices:[{label:'叫んで扉を叩く',next:'elevator_escape'},{label:'目をつぶって待つ',next:'elevator_wait'},{label:'もう1人の自分に話しかける',next:'elevator_talk'}]},
+  elevator_escape:{hpDelta:-15,text:['ドンドンドン！　叫び声がビルに響く。','扉が開いた。3階だった。鏡の中の自分が、まだ笑っていた。','気持ちを落ち着けて、5階へ向かう。'],choices:[{label:'階段で5階へ',next:'floor5'}]},
+  elevator_wait:{text:['目をつぶる。呼吸を整える。\n\n数秒後、ゴン、と音がした。','5階だった。廊下の蛍光灯が1本だけ点滅している。\n\n鏡の自分は、もういなかった。'],choices:[{label:'廊下を進む',next:'floor5'}]},
+  elevator_talk:{hpDelta:-10,text:['「……お前は誰だ」','鏡の自分が口を動かした。声は聞こえない。\n\n唇の動きを読むと——\n\n「に・げ・ろ」','次の瞬間、電気が落ちた。\n真っ暗な箱の中で、何かが動いた気がした。','扉が開いた。5階だった。\nあなたは一人だった。……本当に？'],choices:[{label:'廊下を進む',next:'floor5_grave'}]},
+  stairs:{text:['1階、2階、3階……踊り場ごとに患者の写真が飾られている。','4階の踊り場で足が止まった。\n\n床に赤い文字で書いてある。\n\n「ここで引き返せ」','文字は、まだ乾いていなかった。'],choices:[{label:'無視して5階へ',next:'floor5'},{label:'引き返す',next:'retreat'},{label:'周囲をよく調べる',next:'stairs_investigate'}]},
+  stairs_investigate:{hpDelta:-10,text:['4階の扉に何かが挟まっていた。','古いビデオカメラだった。赤いランプが点いている。撮影中だ。','カメラの液晶を確認した。\n\n今いる踊り場が映っている。\nそして——カメラを持つあなたの後ろに、白い人影が立っていた。','振り返った。誰もいない。\nカメラの中にはまだいる。'],choices:[{label:'カメラを持って5階へ',next:'floor5_camera'},{label:'カメラを置いて5階へ',next:'floor5'}]},
+  retreat:{hpDelta:-10,text:['振り返ると、階段がなかった。\n\n壁だった。いつから？','もう、上がるしかない。'],choices:[{label:'5階へ進む',next:'floor5'}]},
+  floor5:{text:['5階の廊下。突き当たりに光が漏れている。','ドアが半開きだ。中からユウキの声が聞こえる。\n\nドアを開けると——\nユウキが部屋の中心に座っていた。','こちらを見て、笑っている。\n「来てくれると思ってた」'],choices:[{label:'「ユウキ！大丈夫か？」と駆け寄る',next:'approach'},{label:'「……お前、ユウキじゃないだろ」',next:'confront'},{label:'まず部屋の中を観察する',next:'observe_room'}]},
+  floor5_grave:{text:['5階の廊下。\n天井の蛍光灯が全て点滅している。規則的に。モールス信号のように。','ドアが半開きだ。ユウキが座っている。\n\n部屋の壁に、何かがびっしり書かれていた。'],choices:[{label:'ドアを開けて入る',next:'grave_enter'},{label:'壁の文字を読む',next:'grave_wall'}]},
+  floor5_camera:{text:['5階の廊下。カメラの液晶を見ながら進む。','カメラには、廊下に無数の人影が映っていた。肉眼には何も見えない。','ドアが半開き。カメラを向けると——\nユウキのそばに、何かが張り付いていた。'],choices:[{label:'カメラを持ったまま入る',next:'approach_camera'},{label:'カメラをここに置いて入る',next:'confront'}]},
+  observe_room:{hpDelta:-5,text:['部屋を観察する。\n\n窓はすべて内側から釘で打ち付けられている。\n床に五芒星が描かれている。\nユウキはその中心に座っていた。','「早く来てよ。待ってたんだから」\n\nユウキの足が、床についていない。浮いている。'],choices:[{label:'「ユウキ、一緒に逃げよう」と手を伸ばす',next:'approach'},{label:'「本物のユウキはどこだ」',next:'confront'}]},
+  approach:{hpDelta:-30,text:['肩に手を置いた瞬間——','ユウキが振り返った。\n\n目が、なかった。\n眼窩に、何か別のものが入っていた。'],choices:[{label:'逃げる！',next:'bad_end_loop'},{label:'「ユウキ、戻ってこい！」と叫ぶ',next:'good_end_hard'}]},
+  approach_camera:{hpDelta:-15,isEnd:true,endType:'clear_special',text:['カメラを向けながら近づくと——\nユウキに張り付いたものが、レンズを嫌がるように離れた。','ユウキが崩れ落ちた。\n「……え？ここ、どこ？」\n\nユウキだった。本物の。','カメラが熱くなり、液晶が割れた。\n同時に、部屋の窓が一斉に割れた。\n\n外から朝の光が差し込んできた。']},
+  confront:{hpDelta:-10,text:['しばらく沈黙が続いた。','「……賢いね」\n\nユウキの声が、低く変わっていく。','「でも、もう遅い。お前もここに来てしまった」\n\n扉がバタンと閉まった。'],choices:[{label:'「本物のユウキを返せ！」と叫ぶ',next:'good_end'},{label:'窓から逃げる',next:'bad_end_window'},{label:'「お前は何者だ」と問い詰める',next:'interrogate'}]},
+  interrogate:{hpDelta:-15,text:['「何者だ、と聞いている」','「ユウキ」がゆっくり立ち上がった。\n\n「この病院で死んだもの全部だよ」\n\n「昭和32年。火事があった。34人が逃げられなかった」','「ずっと、誰かが来るのを待っていた」\n「お前たちのような——まだ生きているものを」'],choices:[{label:'「解放してやる。成仏しろ」',next:'exorcise'},{label:'「ユウキだけは返せ！」',next:'good_end'}]},
+  exorcise:{isEnd:true,endType:'clear_exorcise',text:['その言葉を聞いた瞬間、「ユウキ」の顔が崩れた。','34の声が、重なって聞こえた。\n泣き声。笑い声。叫び声。','やがて全て静かになった。\n\nユウキが倒れた。意識がある。','壁の焦げ跡が、何か文字を形作っていた。\n\n「ありがとう」']},
+  grave_enter:{hpDelta:-20,text:['ドアを開けた。\n\nユウキが振り返った。表情がない。','「カメラは持ってきた？」\n\nユウキの声じゃない。複数の声が重なって聞こえる。','部屋の隅に、古いビデオカメラが三脚に固定されていた。赤いランプが点滅している。'],choices:[{label:'カメラの液晶を覗く',next:'grave_camera'},{label:'ユウキに近づく',next:'grave_approach'},{label:'来た道を戻ろうとする',next:'grave_no_exit'}]},
+  grave_wall:{hpDelta:-10,text:['壁に書かれていたのは、名前だった。\n\n数百の名前。びっしりと。','よく見ると——一番下に、自分の名前があった。\n\n書いたばかりのように、まだ濡れていた。'],choices:[{label:'ドアを蹴破って入る',next:'grave_enter'},{label:'逃げる',next:'grave_no_exit'}]},
+  grave_camera:{hpDelta:-20,text:['カメラの液晶を覗いた。','部屋が映っている。ユウキが映っている。\n\n……自分が映っていない。','カメラの中では、ユウキの周りに無数の手が伸びていた。\n天井から。床から。壁から。','カメラから目を離した。\n\n部屋は普通に見える。\n\nでも、自分の影が——動いていた。'],choices:[{label:'カメラを叩き壊す',next:'grave_break_camera'},{label:'カメラを持って逃げる',next:'grave_escape_camera'},{label:'「カメラに手が見える」とユウキに言う',next:'grave_tell'}]},
+  grave_approach:{hpDelta:-25,text:['ユウキに近づいた。\n\n床が、歩くたびに柔らかくなっていく気がする。','ユウキに触れた。\n\n冷たい。\n\nユウキが振り返った。\n目が——カメラのレンズのようだった。','「ずっと待ってた」\n「ここは全部、撮っておかないといけない」'],choices:[{label:'「ユウキ！俺だ！わかるか！」と叫ぶ',next:'grave_call'},{label:'逃げる',next:'grave_no_exit'}]},
+  grave_no_exit:{hpDelta:-20,text:['来た道を戻ろうとした。','ドアがなかった。\n\n壁だった。\n\nノックしてみると——向こうから誰かがノックし返した。'],choices:[{label:'カメラを調べる',next:'grave_camera'},{label:'ユウキに頼む',next:'grave_approach'}]},
+  grave_break_camera:{hpDelta:-20,text:['カメラを床に叩きつけた。\n\n割れた液晶から黒い液体が流れ出した。','部屋の温度が急激に下がった。吐く息が白い。','ユウキが叫んだ。\n「やめて！それがあるから私はここにいられるのに！」','ユウキの輪郭がぼやけ始めた。\n「消えたくない……消えたくない……」'],choices:[{label:'「ユウキ、一緒に出よう」と手を掴む',next:'grave_end_together'},{label:'残りのカメラも全部壊す',next:'grave_end_destroy'}]},
+  grave_escape_camera:{hpDelta:-15,text:['カメラを抱えて走った。廊下に出た。','カメラの液晶に、出口が映っていた。\n肉眼では壁にしか見えない場所に。','カメラを信じて、壁に向かって走った。'],choices:[{label:'そのまま壁に突っ込む',next:'grave_end_camera_escape'},{label:'やっぱり止まる',next:'grave_no_exit'}]},
+  grave_tell:{text:['「カメラに……お前の周りに手が見えた」','ユウキが初めて、まともな反応をした。\n目に、少し光が戻った気がした。','「……手？　さわってくるの？　ずっと」\n\n「怖かった。でも逃げられなかった」','ユウキが泣き出した。本物のユウキだった。'],choices:[{label:'「今すぐここを出よう」と引っ張る',next:'grave_end_together'},{label:'カメラを壊してから出る',next:'grave_break_camera'}]},
+  grave_call:{hpDelta:-10,text:['「ユウキ！俺だ！わかるか！」','ユウキのカメラのような目が、ゆっくりと瞬きをした。','「……え？なんで、ここに」\n\n普通の目に戻っていた。','「ずっと……暗いところにいた。声は聞こえるのに、体が動かなくて」'],choices:[{label:'「今すぐ逃げるぞ」と立ち上がらせる',next:'grave_end_together'}]},
+  grave_end_together:{isEnd:true,endType:'clear_grave',text:['ユウキの手を引いて走った。','廊下が伸びる。曲がる。同じ景色が繰り返される。\n\nそれでも走り続けた。','気づいたら、1階にいた。鉄扉が見えた。\n\n外に出た瞬間、ビルの中で何かが崩れる音がした。','振り返ると、ビルの窓という窓から白い煙が立ち上っていた。\n\nあなたとユウキは、朝日の中に立っていた。']},
+  grave_end_destroy:{isEnd:true,endType:'clear_grave',text:['部屋中のカメラを全て壊した。合計、7台あった。','最後の一台が砕けた瞬間、部屋が揺れた。\n\nユウキが正気に戻った。\n「……何が起きてるの？」','説明する時間はない。手を引いて走った。\n\nビルが崩れ始めていた。\n\n2人は外に転がり出た。']},
+  grave_end_camera_escape:{isEnd:true,endType:'clear_grave',text:['壁に突っ込んだ——\n\n抜けた。','カメラに映っていた出口は本物だった。\n\n気づいたら外にいた。手にはカメラが残っていた。','カメラの液晶はまだ割れていない。映っているのはビルの外観だけだった。','……ユウキは？\n\n後ろを向くと、ユウキが倒れていた。\n生きている。\n「夢、見てた気がする……」']},
+  good_end:{isEnd:true,endType:'clear',text:['その声が廃ビル全体に響いた。ガラスが割れ、床が揺れる。','「ユウキ」から黒い煙が溢れ出した。\n\n煙が消えると——ユウキが倒れていた。\n意識はある。呼吸もある。','あなたは友人を担いで、明け方の空の下へ出た。\n東の空が白くなり始めていた。']},
+  good_end_hard:{isEnd:true,endType:'clear',text:['「ユウキ、戻ってこい！！」\n\nその叫びがビルに反響した瞬間——\n目のない顔が歪んだ。','長い静寂の後、ゆっくりと瞳が戻った。\n「……え？　ここ、どこ？」\n\nユウキだった。本物の。','あなたは何も説明せず、ただ友人の手を引いて走った。']},
+  bad_end_loop:{isEnd:true,endType:'dead',text:['走る。走る。走る。\n\nでも廊下が終わらない。','気づいたら、また5階の扉の前にいた。\n\nユウキが笑っていた。\n「おかえり」','……何周目だろう。']},
+  bad_end_window:{isEnd:true,endType:'dead',text:['窓を開けた。\n\n5階の外には地面がなかった。\n真っ暗な虚空が広がっていた。','足元の床が消えた。']}
+};
+
+// ── シナリオ2: 廃校 ──────────────────────
+const SCHOOL_SCENES = {
+  start:{text:['午前3時。弟からLINEが届いた。','「助けて　旧・青葉中学校にいる　出られない」','「放課後に残ると消える」——地元の子どもなら誰でも知っている都市伝説。\n廃校になって3年。あなたは車を飛ばした。','校門は開いていた。\n\nポケットのスマホが、学校内で電波を失った。'],choices:[{label:'正面玄関から入る',next:'front_door'},{label:'体育館の裏から入る',next:'gym_back'}]},
+  front_door:{text:['正面玄関の引き戸を開けると、廊下が伸びていた。\n上履きが整然と並んでいる。\n\n…誰も来ないはずの廃校に。','靴を脱いで上がる。\n\n廊下の掲示板に、授業の時間割が貼られていた。\n日付は——今日だった。'],choices:[{label:'1階を探す',next:'floor1'},{label:'すぐに2階へ向かう',next:'floor2'}]},
+  gym_back:{hpDelta:-10,text:['体育館の裏口から入ると、用具室に出た。','暗闇の中で、跳び箱が規則正しく積まれている。\n\n……数えると、一つ多い。','用具室の扉から体育館に出た。\n\n体育館の真ん中に、白いワンピースの女の子が立っていた。','女の子がゆっくりと振り返った。\n\n「帰って」\n\n警告のように、そう言った。'],choices:[{label:'「弟を探している」と伝える',next:'girl_talk'},{label:'無視して校舎へ向かう',next:'floor1'}]},
+  girl_talk:{text:['「弟？」\n\n女の子の目が、かすかに揺れた。','「……2階の音楽室にいた。でも今はわからない」\n\n「早く。先生が来る前に」'],choices:[{label:'「先生って？」と聞く',next:'girl_ask'},{label:'急いで2階へ向かう',next:'floor2'}]},
+  girl_ask:{hpDelta:-15,text:['女の子が答えようとした瞬間——','廊下の奥から足音が聞こえた。\n\n規則正しい。\n革靴の音。','女の子が消えた。\n\n「走って」\n\n声だけが残った。'],choices:[{label:'走る！',next:'floor2'}]},
+  floor1:{text:['1階の廊下を進む。\n\n教室の扉が、全て少しだけ開いている。','理科室の前で立ち止まった。\n中から、子どもの声が聞こえる気がした。','扉に手をかけた。'],choices:[{label:'理科室を開ける',next:'science_room'},{label:'無視して2階へ',next:'floor2'}]},
+  science_room:{hpDelta:-15,text:['理科室の扉を開けた。','人体模型が、全部こちらを向いていた。','一番手前の模型だけ、頭がなかった。\n\n代わりに——机の上に、弟のスマホが置いてあった。','画面に、メッセージが届いていた。\n\n「音楽室にいる」'],choices:[{label:'スマホを持って2階の音楽室へ',next:'floor2_music'},{label:'スマホを置いて2階へ',next:'floor2'}]},
+  floor2:{text:['2階への階段を上る。\n\n踊り場の鏡に、自分の姿が映った。','鏡の中の自分が、一歩遅れて動いていた。','見なかったことにして、廊下を進む。\n\n音楽室は突き当たりだ。'],choices:[{label:'音楽室のドアをノックする',next:'music_knock'},{label:'そのまま開ける',next:'music_open'}]},
+  floor2_music:{text:['2階への階段を上る。\n\n弟のスマホを握りしめる。','音楽室は突き当たりだ。'],choices:[{label:'音楽室のドアをノックする',next:'music_knock'},{label:'そのまま開ける',next:'music_open'}]},
+  music_knock:{text:['コンコン。\n\n静寂。\n\nコンコン。\n\nまた静寂。','三度目のノックをしようとした手が、止まった。\n\n中からノックが返ってきた。\n\n……2回。'],choices:[{label:'ドアを開ける',next:'music_open'},{label:'「弟か？」と声をかける',next:'music_call'}]},
+  music_call:{text:['「おい、中にいるか？」','しばらく間があった。\n\n「……お兄ちゃん？」\n\n弟の声だった。'],choices:[{label:'急いでドアを開ける',next:'music_open_safe'}]},
+  music_open:{hpDelta:-20,text:['ドアを開けた。','弟が、ピアノの前に座っていた。','振り返った弟の目が——空白だった。\n\n鍵盤を叩き続けている。\nでも、音が出ていない。'],choices:[{label:'「弟！わかるか！」と肩を揺する',next:'shake_brother'},{label:'ピアノを閉める',next:'close_piano'},{label:'部屋を出て逃げる',next:'bad_end_school_loop'}]},
+  music_open_safe:{text:['ドアを開けると——','弟が振り返った。\n目がある。普通の目だ。','「お兄ちゃん……出られなかったんだ」\n\n「扉を開けようとするたびに、別の場所に出るんだよ」'],choices:[{label:'「今すぐ一緒に逃げよう」',next:'escape_together'},{label:'「何か見たか？」と聞く',next:'ask_brother'}]},
+  shake_brother:{hpDelta:-15,text:['「おい！俺だ！わかるか！」','弟の体を揺すった。\n\nしばらくして——弟が瞬きをした。','「……お兄ちゃん？」\n\n目が戻っていた。\n\n「怖かった……ずっと弾かされてた」'],choices:[{label:'「今すぐ逃げるぞ」',next:'escape_together'}]},
+  close_piano:{text:['鍵盤を閉じた。\n\nバタン、と音がした。','弟がびくっとして振り返った。\n\n「……え？　お兄ちゃん？」\n\n目が戻っていた。'],choices:[{label:'「今すぐ逃げよう」',next:'escape_together'}]},
+  ask_brother:{hpDelta:-5,text:['「女の子を見なかったか。白いワンピースの」','弟が少し考えた。\n\n「……いた。でも俺に「逃げて」って言ってすぐ消えた」','「怖くて動けなくて。そしたらピアノの前に座ってたんだ。気づいたら」'],choices:[{label:'「今すぐ逃げよう」',next:'escape_together'}]},
+  escape_together:{text:['弟の手を引いて走った。','階段。1階。玄関。','振り返ると、廊下の奥から足音が近づいてきていた。\n革靴の音。','二人で校門を飛び出た。\n\n足音は、門の前でぴたりと止まった。','空が白み始めていた。'],isEnd:true,endType:'clear'},
+  bad_end_school_loop:{hpDelta:-999,isEnd:true,endType:'dead',text:['走った。階段を下りた。\n\n1階に出た。\n\nなぜか2階にいた。','また走った。また1階に出た。\n\nまた2階にいた。','廊下の奥から、革靴の音が近づいてきた。']}
+};
+
+// ── シナリオ3: 廃旅館 ──────────────────────
+const INN_SCENES = {
+  start:{text:['山道で道に迷った。\n\nカーナビが死んでいる。スマホも圏外だ。','ヘッドライトが、廃旅館を照らし出した。\n\n「椿屋旅館」\n\n看板は傾いているが、玄関の電球だけが点いていた。','車の中にいるか、中に入るか。\n\n外気温は2度。車内の燃料はあと少しだ。'],choices:[{label:'旅館に入る',next:'inn_enter'},{label:'車の中で朝を待つ',next:'inn_car'}]},
+  inn_car:{hpDelta:-20,text:['シートを倒して目を閉じた。','どれくらい経っただろう。\n\n何かが窓を叩いた。','目を開けると——窓の外に、着物姿の女性が立っていた。','笑っている。\n\n「お部屋、ご用意できましたよ」'],choices:[{label:'車から出る',next:'inn_enter'},{label:'鍵をかけて無視する',next:'inn_car2'}]},
+  inn_car2:{hpDelta:-20,text:['目を閉じた。\n\n窓を叩く音が続いている。','気づいたら——車の中にいなかった。\n\n旅館の帳場に、座っていた。','いつの間に入ったのか。'],choices:[{label:'逃げる',next:'inn_escape_attempt'},{label:'帳場を確認する',next:'inn_lobby'}]},
+  inn_enter:{text:['引き戸を開けると、帳場があった。','誰もいない。でも、帳場の電球は点いている。','宿泊者名簿が開いたまま置いてあった。','最後のページを見た。\n\n今日の日付で、一番下に——自分の名前があった。'],choices:[{label:'名簿を閉じる',next:'inn_lobby'},{label:'名簿を破る',next:'inn_rip'},{label:'名簿を持ち去る',next:'inn_take'}]},
+  inn_rip:{hpDelta:-20,text:['名簿のページを破り取ろうとした。','ページが破れた瞬間——電球が割れた。','真っ暗な帳場の中で、誰かの声が聞こえた。\n\n「やめてください」\n\n耳元で。'],choices:[{label:'走って逃げる',next:'inn_escape_attempt'},{label:'「誰だ」と聞く',next:'inn_voice'}]},
+  inn_take:{text:['名簿ごと持ち去ろうとした。','名簿が動かない。\n\n引っ張っても、叩いても、まるで机に溶け込んでいるかのようだ。'],choices:[{label:'諦めて帳場を確認する',next:'inn_lobby'}]},
+  inn_lobby:{text:['帳場を見回すと、鍵のかかったガラスケースに鍵が並んでいた。','「お部屋は5号室でございます」\n\n声がした。\n\n振り返ると、着物の女性が立っていた。','微笑んでいる。目が、笑っていない。'],choices:[{label:'「出口はどこですか」と聞く',next:'inn_ask_exit'},{label:'「ここから出してください」と頼む',next:'inn_ask_exit'},{label:'5号室の鍵を受け取る',next:'inn_room'}]},
+  inn_ask_exit:{hpDelta:-10,text:['「出口でございますか」\n\n女性がゆっくりと首を傾けた。','「お客様は今夜のご宿泊でございます」\n\n「朝になれば、お帰りになれますよ」','朝まで耐えるしかないのかもしれない。'],choices:[{label:'5号室に向かう',next:'inn_room'},{label:'無理やり出口を探す',next:'inn_escape_attempt'}]},
+  inn_escape_attempt:{hpDelta:-25,text:['玄関に向かって走った。','引き戸に手をかけた。\n\n開かない。','窓を試した。開かない。','気づいたら、廊下の真ん中に立っていた。\n\n来た道のはずなのに、見たことのない廊下だ。'],choices:[{label:'5号室を探す',next:'inn_room'},{label:'帳場に戻る',next:'inn_lobby'}]},
+  inn_voice:{text:['「誰だ」\n\n沈黙。','やがて、闇の中から声が返ってきた。\n\n「私もここに泊まった者です」\n\n「名前を書かれると、出られなくなる」\n\n「あなたも、早く朝を迎えて」'],choices:[{label:'「どうすれば出られますか」と聞く',next:'inn_voice2'}]},
+  inn_voice2:{text:['「朝まで5号室にいてください」\n\n「決して、他の部屋のドアは開けないように」\n\n「それだけを守れば——」','声が途切れた。\n\n廊下の奥で、ドアが開く音がした。'],choices:[{label:'5号室に向かう',next:'inn_room'}]},
+  inn_room:{text:['廊下を進むと、5号室があった。','部屋に入ると、布団が敷いてあった。\n窓から外を見ると——山と、自分の車が見えた。\n\n現実だ。','廊下から音が聞こえる。\n複数の足音。近づいてくる。'],choices:[{label:'布団に入って朝を待つ',next:'inn_wait'},{label:'廊下の音を確認する',next:'inn_corridor'},{label:'窓から脱出を試みる',next:'inn_window_escape'}]},
+  inn_wait:{text:['目を閉じた。\n\n廊下の足音が、ドアの前で止まった。','ドアノブが、ゆっくりと動いた。','息を殺した。\n\n数分後——足音が遠ざかっていった。','次に気づいたとき、部屋に朝の光が差し込んでいた。'],isEnd:true,endType:'clear'},
+  inn_corridor:{hpDelta:-30,text:['廊下に出た。','廊下の奥に、着物の女性が立っていた。\n今度は笑っていない。','「開けてはならないと申し上げましたのに」\n\n「他のお客様が目を覚ましてしまいます」','廊下の各部屋のドアが、一斉に開き始めた。'],choices:[{label:'5号室に飛び込む',next:'inn_wait'},{label:'玄関へ向かって全力で走る',next:'inn_final_run'}]},
+  inn_window_escape:{text:['窓を開けた。\n\n外は思ったより近い。飛び降りられる高さだ。','外に出た。\n\n冷たい夜気。足元は雪だった。','車に走った。\n\nエンジンがかかった。','バックミラーを見ると——旅館の玄関に、着物の女性が立っていた。\n\n微笑んでいた。','車を走らせた。\n二度と振り返らなかった。'],isEnd:true,endType:'clear_special'},
+  inn_final_run:{hpDelta:-20,text:['走った。\n\n玄関が見えた。引き戸に手をかけた。','今度は——開いた。','外に転がり出た。\n\n冷たい地面。雪。\n\n振り返ると、旅館の電球が消えた。','車に走り込んだ。\n夜が明け始めていた。'],isEnd:true,endType:'clear'}
+};
+
+// シナリオ→エンドデータのマッピング
+const SCENARIO_META = {
+  hospital: {
+    title:'深夜の廃病院', subtitle:'ABANDONED HOSPITAL',
+    scenes: HOSPITAL_SCENES,
+    graveKeys: ['elevator_talk','floor5_grave','grave_enter','grave_wall'],
+    ends: {
+      clear:          {badge:'CLEAR',         cls:'end-clear',badgeCls:'badge-clear',text:'夜明けとともに、ビルは静かになった。\n友人を連れ帰ることができた。'},
+      clear_special:  {badge:'SPECIAL CLEAR', cls:'end-clear',badgeCls:'badge-clear',text:'カメラが、あなたと友人を救った。\n証拠は全て壊れた。誰も信じないだろう。'},
+      clear_exorcise: {badge:'TRUE CLEAR',    cls:'end-clear',badgeCls:'badge-clear',text:'34人が、ようやく眠れた。\nあなたはそのことを、一生誰にも言わないだろう。'},
+      clear_grave:    {badge:'GRAVE CLEAR',   cls:'end-clear',badgeCls:'badge-clear',text:'ここから先を——見てはいけない。\nあなたが持ち帰ったのは、友人だけではないかもしれない。'},
+      dead:           {badge:'GAME OVER',     cls:'end-dead', badgeCls:'badge-dead', text:'あなたはビルに囚われた。\nまたいつか、誰かが助けに来るかもしれない。'}
+    },
+    shareMsg: {
+      clear:         n=>`👁 廃墟ホラーRPG\n${n}が廃病院で友人を救出！\n#廃墟ホラーRPG #深夜の廃病院`,
+      clear_special: n=>`📷 廃墟ホラーRPG\n${n}がSPECIAL CLEARルート達成！\n#廃墟ホラーRPG`,
+      clear_exorcise:n=>`⛩ 廃墟ホラーRPG\n${n}がTRUE CLEARを達成。34人の霊が成仏した。\n#廃墟ホラーRPG`,
+      clear_grave:   n=>`📹 廃墟ホラーRPG\n${n}がGRAVEルートをクリア。\n#廃墟ホラーRPG #GraveEncounters`,
+      dead:          n=>`💀 廃墟ホラーRPG\n${n}は廃病院に囚われた……\n#廃墟ホラーRPG`
+    }
   },
-
-  police: {
-    text: [
-      '「もしもし、廃ビルで——」\n電話が繋がった瞬間、画面が真っ黒になった。',
-      '電池は満タンのはずだ。\nスマホを再起動しても、電話アプリだけが起動しない。',
-      '……一人で入るしかない。'
-    ],
-    choices: [{ label: '意を決して入る', next: 'enter' }]
+  school: {
+    title:'深夜の廃校', subtitle:'ABANDONED SCHOOL',
+    scenes: SCHOOL_SCENES,
+    graveKeys: [],
+    ends: {
+      clear:{badge:'CLEAR',    cls:'end-clear',badgeCls:'badge-clear',text:'空が白み始めた。\n弟と一緒に、校門を出ることができた。'},
+      dead: {badge:'GAME OVER',cls:'end-dead', badgeCls:'badge-dead', text:'廊下が続いている。\n出口は、もうどこにもない。'}
+    },
+    shareMsg: {
+      clear:n=>`🏫 廃墟ホラーRPG\n${n}が廃校から弟を救出！\n#廃墟ホラーRPG #深夜の廃校`,
+      dead: n=>`💀 廃墟ホラーRPG\n${n}は廃校の廊下を抜け出せなかった……\n#廃墟ホラーRPG`
+    }
   },
-
-  enter: {
-    text: [
-      '鉄扉をくぐると、薄暗い廊下が伸びていた。\n廃材と腐った木の匂い。',
-      '足元に古い人形が落ちている。\n病院の患者服を着ていた。\n目が合った気がした。',
-      '奥に進むと、分岐点がある。\nエレベーターと、階段。'
-    ],
-    choices: [
-      { label: 'エレベーターを使う', next: 'elevator' },
-      { label: '階段を上る', next: 'stairs' }
-    ]
-  },
-
-  // ── エレベータールート ──
-  elevator: {
-    hpDelta: -20,
-    text: [
-      '廃病院に電気が通っている。\nボタンを押すと、扉がゆっくり開いた。',
-      '5階を押す。ゆっくりと上昇する。\n\n正面の鏡を見た。\n\n自分の姿が——2つ映っていた。',
-      'もう1人の自分は、こちらに向かって手を振っていた。\nあなたは手を振っていない。'
-    ],
-    choices: [
-      { label: '叫んで扉を叩く', next: 'elevator_escape' },
-      { label: '目をつぶって待つ', next: 'elevator_wait' },
-      { label: 'もう1人の自分に話しかける', next: 'elevator_talk' }
-    ]
-  },
-
-  elevator_escape: {
-    hpDelta: -15,
-    text: [
-      'ドンドンドン！　叫び声がビルに響く。',
-      '扉が開いた。3階だった。\n鏡の中の自分が、まだ笑っていた。',
-      '気持ちを落ち着けて、5階へ向かう。'
-    ],
-    choices: [{ label: '階段で5階へ', next: 'floor5' }]
-  },
-
-  elevator_wait: {
-    text: [
-      '目をつぶる。呼吸を整える。\n\n数秒後、ゴン、と音がした。',
-      '5階だった。\n扉が開くと、廊下の蛍光灯が1本だけ点滅している。\n\n鏡の自分は、もういなかった。'
-    ],
-    choices: [{ label: '廊下を進む', next: 'floor5' }]
-  },
-
-  elevator_talk: {
-    hpDelta: -10,
-    text: [
-      '「……お前は誰だ」',
-      '鏡の自分が口を動かした。\n声は聞こえない。\n\n唇の動きを読むと——\n\n「に・げ・ろ」',
-      '次の瞬間、電気が落ちた。\n真っ暗な箱の中で、何かが動いた気がした。',
-      '扉が開いた。5階だった。\nあなたは一人だった。\n\n……本当に？'
-    ],
-    choices: [{ label: '廊下を進む', next: 'floor5_grave' }]
-  },
-
-  // ── 階段ルート ──
-  stairs: {
-    text: [
-      '1階、2階、3階……\n踊り場ごとに、入院患者の写真が飾られている。',
-      '4階の踊り場で足が止まった。\n\n床に赤い文字で書いてある。\n\n「ここで引き返せ」',
-      '文字は、まだ乾いていなかった。'
-    ],
-    choices: [
-      { label: '無視して5階へ進む', next: 'floor5' },
-      { label: '引き返す', next: 'retreat' },
-      { label: '周囲をよく調べる', next: 'stairs_investigate' }
-    ]
-  },
-
-  stairs_investigate: {
-    hpDelta: -10,
-    text: [
-      '踊り場をよく見ると、4階の扉に何かが挟まっていた。',
-      '古いビデオカメラだった。\n液晶に赤いランプが点いている。撮影中だ。',
-      'カメラの液晶を確認した。\n\n今いる踊り場が映っている。\nそして——カメラを持つあなたの後ろに、白い人影が立っていた。',
-      '振り返った。\n\n誰もいない。\n\nカメラの中にはまだいる。'
-    ],
-    choices: [
-      { label: 'カメラを持って5階へ向かう', next: 'floor5_camera' },
-      { label: 'カメラを置いて5階へ向かう', next: 'floor5' }
-    ]
-  },
-
-  retreat: {
-    hpDelta: -10,
-    text: [
-      '振り返ると、階段がなかった。\n\n壁だった。\nいつから？',
-      'もう、上がるしかない。'
-    ],
-    choices: [{ label: '5階へ進む', next: 'floor5' }]
-  },
-
-  // ── CHAPTER 2: 5階 ──
-  floor5: {
-    text: [
-      '5階の廊下。\n突き当たりに光が漏れている。',
-      'ドアが半開きだ。中からユウキの声が聞こえる。\n\nドアを開けると——\nユウキが部屋の中心に座っていた。',
-      'こちらを見て、笑っている。\n「来てくれると思ってた」'
-    ],
-    choices: [
-      { label: '「ユウキ！大丈夫か？」と駆け寄る', next: 'approach' },
-      { label: '「……お前、ユウキじゃないだろ」', next: 'confront' },
-      { label: 'まず部屋の中を観察する', next: 'observe_room' }
-    ]
-  },
-
-  // グレイブルート用5階
-  floor5_grave: {
-    text: [
-      '5階の廊下。\n天井の蛍光灯が全て点滅している。\n規則的に。まるでモールス信号のように。',
-      'ドアが半開きだ。\nユウキが座っている。\n\n部屋の壁に、何かがびっしり書かれていた。'
-    ],
-    choices: [
-      { label: 'ドアを開けて入る', next: 'grave_enter' },
-      { label: '壁の文字を読む', next: 'grave_wall' }
-    ]
-  },
-
-  // カメラ持参ルート
-  floor5_camera: {
-    text: [
-      '5階の廊下。\nカメラの液晶を見ながら進む。',
-      'カメラには、廊下に無数の人影が映っていた。\n肉眼には何も見えない。',
-      'ドアが半開き。\nカメラを向けると——\nユウキのそばに、何かが張り付いていた。'
-    ],
-    choices: [
-      { label: 'カメラを持ったまま入る', next: 'approach_camera' },
-      { label: 'カメラをここに置いて入る', next: 'confront' }
-    ]
-  },
-
-  observe_room: {
-    hpDelta: -5,
-    text: [
-      '部屋を観察する。\n\n窓はすべて内側から釘で打ち付けられている。\n床に五芒星が描かれている。\nユウキはその中心に座っていた。',
-      '「早く来てよ。待ってたんだから」\n\nユウキの足が、床についていない。\n浮いている。'
-    ],
-    choices: [
-      { label: '「ユウキ、一緒に逃げよう」と手を伸ばす', next: 'approach' },
-      { label: '「本物のユウキはどこだ」', next: 'confront' }
-    ]
-  },
-
-  approach: {
-    hpDelta: -30,
-    text: [
-      '肩に手を置いた瞬間——',
-      'ユウキが振り返った。\n\n目が、なかった。\n眼窩に、何か別のものが入っていた。'
-    ],
-    choices: [
-      { label: '逃げる！', next: 'bad_end_loop' },
-      { label: '「ユウキ、戻ってこい！」と叫ぶ', next: 'good_end_hard' }
-    ]
-  },
-
-  approach_camera: {
-    hpDelta: -15,
-    isEnd: true, endType: 'clear_special',
-    text: [
-      'カメラを向けながら近づくと——\nユウキに張り付いたものが、レンズを嫌がるように離れた。',
-      'ユウキが崩れ落ちた。\n「……え？ここ、どこ？」\n\nユウキだった。本物の。',
-      'カメラが熱くなり、液晶が割れた。\n同時に、部屋の窓が一斉に割れた。\n\n外から朝の光が差し込んできた。'
-    ]
-  },
-
-  confront: {
-    hpDelta: -10,
-    text: [
-      'しばらく沈黙が続いた。',
-      '「……賢いね」\n\nユウキの声が、低く変わっていく。',
-      '「でも、もう遅い。お前もここに来てしまった」\n\n扉がバタンと閉まった。'
-    ],
-    choices: [
-      { label: '「本物のユウキを返せ！」と叫ぶ', next: 'good_end' },
-      { label: '窓から逃げる', next: 'bad_end_window' },
-      { label: '「お前は何者だ」と問い詰める', next: 'interrogate' }
-    ]
-  },
-
-  interrogate: {
-    hpDelta: -15,
-    text: [
-      '「何者だ、と聞いている」',
-      '「ユウキ」がゆっくり立ち上がった。\n\n「この病院で死んだもの全部だよ」\n\n「昭和32年。火事があった。34人が逃げられなかった」',
-      '「ずっと、誰かが来るのを待っていた」\n\n「お前たちのような——まだ生きているものを」'
-    ],
-    choices: [
-      { label: '「解放してやる。成仏しろ」', next: 'exorcise' },
-      { label: '「ユウキだけは返せ！」', next: 'good_end' }
-    ]
-  },
-
-  exorcise: {
-    isEnd: true, endType: 'clear_exorcise',
-    text: [
-      'その言葉を聞いた瞬間、「ユウキ」の顔が崩れた。',
-      '34の声が、重なって聞こえた。\n泣き声。笑い声。叫び声。',
-      'やがて全て静かになった。\n\nユウキが倒れた。意識がある。',
-      '壁の焦げ跡が、何か文字を形作っていた。\n\n「ありがとう」'
-    ]
-  },
-
-  // ── グレイブエンカウンターズルート ──
-  grave_enter: {
-    hpDelta: -20,
-    text: [
-      'ドアを開けた。\n\nユウキが振り返った。\n表情がない。',
-      '「カメラは持ってきた？」\n\nユウキの声じゃない。\n複数の声が重なって聞こえる。',
-      '部屋の隅に、古いビデオカメラが三脚に固定されていた。\n電源が入っている。\n赤いランプが点滅している。'
-    ],
-    choices: [
-      { label: 'カメラの液晶を覗く', next: 'grave_camera' },
-      { label: 'ユウキに近づく', next: 'grave_approach' },
-      { label: '来た道を戻ろうとする', next: 'grave_no_exit' }
-    ]
-  },
-
-  grave_wall: {
-    hpDelta: -10,
-    text: [
-      '壁に書かれていたのは、名前だった。\n\n数百の名前。びっしりと。',
-      'よく見ると——一番下に、自分の名前があった。\n\n書いたばかりのように、まだ濡れていた。'
-    ],
-    choices: [
-      { label: 'ドアを蹴破って入る', next: 'grave_enter' },
-      { label: '逃げる', next: 'grave_no_exit' }
-    ]
-  },
-
-  grave_camera: {
-    hpDelta: -20,
-    text: [
-      'カメラの液晶を覗いた。',
-      '部屋が映っている。ユウキが映っている。\n\n……自分が映っていない。',
-      'カメラの中では、ユウキの周りに無数の手が伸びていた。\n天井から。床から。壁から。',
-      'カメラから目を離した。\n\n部屋は普通に見える。\n\nでも、自分の影が——動いていた。'
-    ],
-    choices: [
-      { label: 'カメラを叩き壊す', next: 'grave_break_camera' },
-      { label: 'カメラを持って逃げる', next: 'grave_escape_camera' },
-      { label: '「カメラに手が見える」とユウキに言う', next: 'grave_tell' }
-    ]
-  },
-
-  grave_approach: {
-    hpDelta: -25,
-    text: [
-      'ユウキに近づいた。\n\n床が、歩くたびに柔らかくなっていく気がする。',
-      'ユウキに触れた。\n\n冷たい。\n\nユウキが振り返った。\n目が——カメラのレンズのようだった。\nじっと、あなたを記録している。',
-      '「ずっと待ってた」\n「ここは全部、撮っておかないといけない」'
-    ],
-    choices: [
-      { label: '「ユウキ！俺だ！わかるか！」と叫ぶ', next: 'grave_call' },
-      { label: '逃げる', next: 'grave_no_exit' }
-    ]
-  },
-
-  grave_no_exit: {
-    hpDelta: -20,
-    text: [
-      '来た道を戻ろうとした。',
-      'ドアがなかった。\n\n壁だった。\n\nノックしてみると——向こうから誰かがノックし返した。'
-    ],
-    choices: [
-      { label: 'カメラを調べる', next: 'grave_camera' },
-      { label: 'ユウキに頼む', next: 'grave_approach' }
-    ]
-  },
-
-  grave_break_camera: {
-    hpDelta: -20,
-    text: [
-      'カメラを床に叩きつけた。\n\n割れた液晶から、黒い液体が流れ出した。',
-      '部屋の温度が急激に下がった。\n吐く息が白い。',
-      'ユウキが叫んだ。\n「やめて！それがあるから私はここにいられるのに！」',
-      'ユウキの輪郭がぼやけ始めた。\n「消えたくない……消えたくない……」'
-    ],
-    choices: [
-      { label: '「ユウキ、一緒に出よう」と手を掴む', next: 'grave_end_together' },
-      { label: '残りのカメラも全部壊す', next: 'grave_end_destroy' }
-    ]
-  },
-
-  grave_escape_camera: {
-    hpDelta: -15,
-    text: [
-      'カメラを抱えて走った。廊下に出た。',
-      'カメラの液晶に、出口が映っていた。\n肉眼では壁にしか見えない場所に。',
-      'カメラを信じて、壁に向かって走った。'
-    ],
-    choices: [
-      { label: 'そのまま壁に突っ込む', next: 'grave_end_camera_escape' },
-      { label: 'やっぱり止まる', next: 'grave_no_exit' }
-    ]
-  },
-
-  grave_tell: {
-    text: [
-      '「カメラに……お前の周りに手が見えた」',
-      'ユウキが初めて、まともな反応をした。\n目に、少し光が戻った気がした。',
-      '「……手？　さわってくるの？　ずっと」\n\n「怖かった。でも逃げられなかった」',
-      'ユウキが泣き出した。\n本物のユウキだった。'
-    ],
-    choices: [
-      { label: '「今すぐここを出よう」と引っ張る', next: 'grave_end_together' },
-      { label: 'カメラを壊してから出る', next: 'grave_break_camera' }
-    ]
-  },
-
-  grave_call: {
-    hpDelta: -10,
-    text: [
-      '「ユウキ！俺だ！わかるか！」',
-      'ユウキのカメラのような目が、ゆっくりと瞬きをした。',
-      '「……え？なんで、ここに」\n\n普通の目に戻っていた。',
-      '「ずっと……暗いところにいた。声は聞こえるのに、体が動かなくて」'
-    ],
-    choices: [
-      { label: '「今すぐ逃げるぞ」と立ち上がらせる', next: 'grave_end_together' }
-    ]
-  },
-
-  // ── グレイブエンディング ──
-  grave_end_together: {
-    isEnd: true, endType: 'clear_grave',
-    text: [
-      'ユウキの手を引いて走った。',
-      '廊下が伸びる。曲がる。同じ景色が繰り返される。\n\nそれでも走り続けた。',
-      '気づいたら、1階にいた。鉄扉が見えた。\n\n外に出た瞬間、ビルの中で何かが崩れる音がした。',
-      '振り返ると、ビルの窓という窓から白い煙が立ち上っていた。\n\nあなたとユウキは、朝日の中に立っていた。'
-    ]
-  },
-
-  grave_end_destroy: {
-    isEnd: true, endType: 'clear_grave',
-    text: [
-      '部屋中のカメラを全て壊した。\n合計、7台あった。',
-      '最後の一台が砕けた瞬間、部屋が揺れた。\n\nユウキが正気に戻った。\n「……何が起きてるの？」',
-      '説明する時間はない。手を引いて走った。\n\nビルが崩れ始めていた。\n\n2人は外に転がり出た。'
-    ]
-  },
-
-  grave_end_camera_escape: {
-    isEnd: true, endType: 'clear_grave',
-    text: [
-      '壁に突っ込んだ——\n\n抜けた。',
-      'カメラに映っていた出口は本物だった。\n\n気づいたら外にいた。\n手にはカメラが残っていた。',
-      'カメラの液晶はまだ割れていない。\n映っているのは、ビルの外観だけだった。',
-      '……ユウキは？\n\n後ろを向くと、ユウキが倒れていた。\n生きている。\n「夢、見てた気がする……」'
-    ]
-  },
-
-  // ── 通常エンディング ──
-  good_end: {
-    isEnd: true, endType: 'clear',
-    text: [
-      'その声が廃ビル全体に響いた。\nガラスが割れ、床が揺れる。',
-      '「ユウキ」から黒い煙が溢れ出した。\n\n煙が消えると——ユウキが倒れていた。\n意識はある。呼吸もある。',
-      'あなたは友人を担いで、明け方の空の下へ出た。\n東の空が白くなり始めていた。'
-    ]
-  },
-
-  good_end_hard: {
-    isEnd: true, endType: 'clear',
-    text: [
-      '「ユウキ、戻ってこい！！」\n\nその叫びがビルに反響した瞬間——\n目のない顔が歪んだ。',
-      '長い静寂の後、ゆっくりと瞳が戻った。\n「……え？　ここ、どこ？」\n\nユウキだった。本物の。',
-      'あなたは何も説明せず、ただ友人の手を引いて走った。'
-    ]
-  },
-
-  bad_end_loop: {
-    isEnd: true, endType: 'dead',
-    text: [
-      '走る。走る。走る。\n\nでも廊下が終わらない。',
-      '気づいたら、また5階の扉の前にいた。\n\nユウキが笑っていた。\n「おかえり」',
-      '……何周目だろう。'
-    ]
-  },
-
-  bad_end_window: {
-    isEnd: true, endType: 'dead',
-    text: [
-      '窓を開けた。\n\n5階の外には地面がなかった。\n真っ暗な虚空が広がっていた。',
-      '足元の床が消えた。'
-    ]
+  inn: {
+    title:'山奥の廃旅館', subtitle:'ABANDONED MOUNTAIN INN',
+    scenes: INN_SCENES,
+    graveKeys: [],
+    ends: {
+      clear:        {badge:'CLEAR',        cls:'end-clear',badgeCls:'badge-clear',text:'朝の光が差し込んだ。\n椿屋旅館を、二度と訪れないと誓った。'},
+      clear_special:{badge:'ESCAPE CLEAR', cls:'end-clear',badgeCls:'badge-clear',text:'窓から抜け出した。\nバックミラーの微笑みは、今でも忘れられない。'},
+      dead:         {badge:'GAME OVER',    cls:'end-dead', badgeCls:'badge-dead', text:'朝は来なかった。\n名簿の最後のページに、あなたの名前だけが残った。'}
+    },
+    shareMsg: {
+      clear:        n=>`🏯 廃墟ホラーRPG\n${n}が廃旅館で夜明けを迎えた！\n#廃墟ホラーRPG #山奥の廃旅館`,
+      clear_special:n=>`🪟 廃墟ホラーRPG\n${n}が窓から脱出！ESCAPE CLEARルート達成。\n#廃墟ホラーRPG`,
+      dead:         n=>`💀 廃墟ホラーRPG\n${n}は廃旅館に残された……\n名簿に名前が書かれていた。\n#廃墟ホラーRPG`
+    }
   }
 };
 
-// ============================================================
-// エンドデータ
-// ============================================================
-const END_DATA = {
-  clear:          { badge: 'CLEAR',         cls: 'end-clear', badgeCls: 'badge-clear', text: '夜明けとともに、ビルは静かになった。\n友人を連れ帰ることができた。' },
-  clear_special:  { badge: 'SPECIAL CLEAR', cls: 'end-clear', badgeCls: 'badge-clear', text: 'カメラが、あなたと友人を救った。\n証拠は全て壊れた。誰も信じないだろう。' },
-  clear_exorcise: { badge: 'TRUE CLEAR',    cls: 'end-clear', badgeCls: 'badge-clear', text: '34人が、ようやく眠れた。\nあなたはそのことを、一生誰にも言わないだろう。' },
-  clear_grave:    { badge: 'GRAVE CLEAR',   cls: 'end-clear', badgeCls: 'badge-clear', text: 'ここから先を——見てはいけない。\nあなたが持ち帰ったのは、友人だけではないかもしれない。' },
-  dead:           { badge: 'GAME OVER',     cls: 'end-dead',  badgeCls: 'badge-dead',  text: 'あなたはビルに囚われた。\nまたいつか、誰かが助けに来るかもしれない。' }
-};
-
-// ============================================================
-// 状態
-// ============================================================
-let state = { hp: 100, scene: 'start', isGraveRoute: false };
+// ══════════════════════════════════════════════
+// ゲーム状態
+// ══════════════════════════════════════════════
+let state = { hp:100, scene:'start', isGraveRoute:false, currentScenario:'hospital' };
 let liffReady = false;
 let userProfile = null;
 
 const chatEl    = document.getElementById('chat');
 const choicesEl = document.getElementById('choices');
 
-function scrollBottom() { requestAnimationFrame(() => { chatEl.scrollTop = chatEl.scrollHeight; }); }
-function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+function scrollBottom() { requestAnimationFrame(()=>{ chatEl.scrollTop = chatEl.scrollHeight; }); }
+function wait(ms) { return new Promise(r=>setTimeout(r,ms)); }
 
-function addBubble(text, type = 'bot') {
+function addBubble(text, type='bot') {
   return new Promise(resolve => {
-    requestAnimationFrame(() => {
+    requestAnimationFrame(()=>{
       const div = document.createElement('div');
-      const isGraveBot = state.isGraveRoute && type === 'bot';
+      const isGraveBot = state.isGraveRoute && type==='bot';
       div.className = isGraveBot
         ? 'bubble grave grave-flicker'
-        : `bubble ${type}${type === 'bot' ? ' horror' : ''}`;
+        : `bubble ${type}${type==='bot'?' horror':''}`;
       div.textContent = text;
       chatEl.appendChild(div);
       scrollBottom();
@@ -708,27 +850,27 @@ function addBubble(text, type = 'bot') {
   });
 }
 
-function showTyping(ms = 800) {
+function showTyping(ms=800) {
   const el = document.createElement('div');
   el.className = 'typing';
   el.innerHTML = '<span></span><span></span><span></span>';
   chatEl.appendChild(el);
   scrollBottom();
-  return new Promise(r => setTimeout(() => { el.remove(); r(); }, ms));
+  return new Promise(r=>setTimeout(()=>{ el.remove(); r(); }, ms));
 }
 
 function updateHpUI(hp) {
-  const pct   = Math.max(0, hp);
-  const color = hp > 60 ? '#2ecc71' : hp > 30 ? '#f39c12' : '#e74c3c';
+  const pct   = Math.max(0,hp);
+  const color = hp>60?'#2ecc71':hp>30?'#f39c12':'#e74c3c';
   document.getElementById('hpLabel').textContent = `HP ${hp}`;
   const fill = document.getElementById('hpMiniFill');
-  fill.style.width = pct + '%';
+  fill.style.width = pct+'%';
   fill.style.background = color;
 }
 
 function addHpChip(hp) {
-  const pct   = Math.max(0, hp);
-  const color = hp > 60 ? '#2ecc71' : hp > 30 ? '#f39c12' : '#e74c3c';
+  const pct   = Math.max(0,hp);
+  const color = hp>60?'#2ecc71':hp>30?'#f39c12':'#e74c3c';
   const div = document.createElement('div');
   div.className = 'hp-chip';
   div.innerHTML = `<span>精神力 ${hp}/100</span><div class="hp-chip-bar"><div class="hp-chip-fill" style="width:${pct}%;background:${color}"></div></div>`;
@@ -743,17 +885,17 @@ function addSystemMsg(text) {
   chatEl.appendChild(div);
 }
 
-// ============================================================
+// ══════════════════════════════════════════════
 // シーン処理
-// ============================================================
+// ══════════════════════════════════════════════
 async function showScene(key) {
-  const scene = SCENES[key];
+  const meta  = SCENARIO_META[state.currentScenario];
+  const scene = meta.scenes[key];
   if (!scene) return;
   state.scene = key;
 
-  // グレイブルート突入判定
-  const graveEntries = ['elevator_talk', 'floor5_grave', 'grave_enter', 'grave_wall'];
-  if (graveEntries.includes(key) && !state.isGraveRoute) {
+  // グレイブルート突入
+  if (meta.graveKeys.includes(key) && !state.isGraveRoute) {
     state.isGraveRoute = true;
     await wait(300);
     addSystemMsg('— GRAVE ENCOUNTERS —');
@@ -770,7 +912,7 @@ async function showScene(key) {
   for (const line of scene.text) {
     const ms = Math.min(1600, 600 + line.length * 18);
     await showTyping(ms);
-    await addBubble(line, 'bot');
+    await addBubble(line,'bot');
     await wait(250);
   }
 
@@ -781,7 +923,7 @@ async function showScene(key) {
 
   if (state.hp <= 0 && !scene.isEnd) {
     await showTyping(700);
-    await addBubble('頭が痛い。もう限界だ……精神が崩れていく。', 'bot');
+    await addBubble('頭が痛い。もう限界だ……精神が崩れていく。','bot');
     await wait(300);
     showEnd('dead');
     return;
@@ -789,14 +931,14 @@ async function showScene(key) {
 
   if (scene.isEnd) { showEnd(scene.endType); return; }
 
-  (scene.choices || []).forEach(c => {
+  (scene.choices||[]).forEach(c => {
     const btn = document.createElement('button');
     btn.className = 'choice-btn';
     btn.textContent = c.label;
-    btn.onclick = async () => {
-      choicesEl.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+    btn.onclick = async ()=>{
+      choicesEl.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
       choicesEl.innerHTML = '';
-      await addBubble(c.label, 'user');
+      await addBubble(c.label,'user');
       await wait(280);
       showScene(c.next);
     };
@@ -804,11 +946,12 @@ async function showScene(key) {
   });
 }
 
-// ============================================================
+// ══════════════════════════════════════════════
 // エンド
-// ============================================================
+// ══════════════════════════════════════════════
 function showEnd(type) {
-  const data = END_DATA[type] || END_DATA.dead;
+  const meta = SCENARIO_META[state.currentScenario];
+  const data = meta.ends[type] || meta.ends.dead;
   choicesEl.innerHTML = '';
 
   const banner = document.createElement('div');
@@ -825,57 +968,77 @@ function showEnd(type) {
     const shareBtn = document.createElement('button');
     shareBtn.className = 'btn-share';
     shareBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11A2.99 2.99 0 0 0 18 8a3 3 0 1 0-3-3c0 .24.04.47.09.7L8.04 9.81A3 3 0 0 0 6 9a3 3 0 1 0 3 3c0-.24-.04-.47-.09-.7l7.05-4.11c.52.47 1.2.77 1.96.77a3 3 0 0 0 0-6z"/></svg>結果をシェア`;
-    shareBtn.onclick = () => shareResult(type);
+    shareBtn.onclick = ()=>shareResult(type);
     actions.appendChild(shareBtn);
   }
 
   const restartBtn = document.createElement('button');
-  restartBtn.className = 'btn-restart';
-  restartBtn.textContent = '▸ もう一度プレイする';
-  restartBtn.onclick = restartGame;
+  restartBtn.className = 'btn-back-top';
+  restartBtn.textContent = '▸ シナリオ選択に戻る';
+  restartBtn.onclick = backToTop;
   actions.appendChild(restartBtn);
 
   choicesEl.parentNode.replaceChild(actions, choicesEl);
 }
 
-// ============================================================
+// ══════════════════════════════════════════════
 // シェア
-// ============================================================
+// ══════════════════════════════════════════════
 async function shareResult(type) {
   if (!liffReady) return;
   const name = userProfile?.displayName ?? 'プレイヤー';
-  const msgs = {
-    clear:          `👁 深夜の廃ビル\n${name}が友人を救出！\n恐怖を乗り越え夜明けへ——\n#深夜の廃ビル`,
-    clear_special:  `📷 深夜の廃ビル\n${name}がカメラで謎を解いた！\nSPECIAL CLEARルート達成。\n#深夜の廃ビル`,
-    clear_exorcise: `⛩ 深夜の廃ビル\n${name}が34人の霊を成仏させた。TRUE CLEAR。\n#深夜の廃ビル`,
-    clear_grave:    `📹 深夜の廃ビル\n${name}がGRAVEルートをクリア。\nあの病院で——何を見たのか。\n#深夜の廃ビル #GraveEncounters`,
-    dead:           `💀 深夜の廃ビル\n${name}は廃ビルに囚われた……\n「おかえり」——あの声が離れない。\n#深夜の廃ビル`
-  };
+  const meta = SCENARIO_META[state.currentScenario];
+  const fn   = meta.shareMsg[type] || meta.shareMsg.dead;
   try {
-    await liff.shareTargetPicker([{ type: 'text', text: msgs[type] || msgs.dead }]);
-  } catch(e) { console.warn('share cancelled', e); }
+    await liff.shareTargetPicker([{type:'text', text:fn(name)}]);
+  } catch(e) { console.warn('share cancelled',e); }
 }
 
-// ============================================================
-// リスタート
-// ============================================================
-function restartGame() {
-  state = { hp: 100, scene: 'start', isGraveRoute: false };
+// ══════════════════════════════════════════════
+// シナリオ開始 / 画面遷移
+// ══════════════════════════════════════════════
+function startScenario(id) {
+  const meta = SCENARIO_META[id];
+  state = { hp:100, scene:'start', isGraveRoute:false, currentScenario:id };
   updateHpUI(100);
+
+  // 古いendActionsがあれば戻す
   const ea = document.getElementById('endActions');
   if (ea) {
     const nc = document.createElement('div');
-    nc.className = 'choices'; nc.id = 'choices';
+    nc.className='choices'; nc.id='choices';
+    ea.parentNode.replaceChild(nc, ea);
+  }
+
+  chatEl.innerHTML = '';
+  document.getElementById('gameTitle').textContent    = meta.title;
+  document.getElementById('gameSubtitle').textContent = meta.subtitle;
+
+  // 画面切り替え
+  document.getElementById('topScreen').classList.remove('active');
+  document.getElementById('gameScreen').classList.add('active');
+
+  addSystemMsg('— 深夜 —');
+  setTimeout(()=>showScene('start'), 400);
+}
+
+function backToTop() {
+  document.getElementById('gameScreen').classList.remove('active');
+  document.getElementById('topScreen').classList.add('active');
+
+  // choices復元
+  const ea = document.getElementById('endActions');
+  if (ea) {
+    const nc = document.createElement('div');
+    nc.className='choices'; nc.id='choices';
     ea.parentNode.replaceChild(nc, ea);
   }
   chatEl.innerHTML = '';
-  addSystemMsg('— NEW GAME —');
-  setTimeout(() => showScene('start'), 400);
 }
 
-// ============================================================
+// ══════════════════════════════════════════════
 // LIFF初期化
-// ============================================================
+// ══════════════════════════════════════════════
 async function initLiff() {
   const splashUser = document.getElementById('splashUser');
   const splash     = document.getElementById('splash');
@@ -886,29 +1049,295 @@ async function initLiff() {
     if (liff.isLoggedIn()) {
       userProfile = await liff.getProfile();
       splashUser.textContent = `${userProfile.displayName} さん、ようこそ`;
-      const avatar = document.getElementById('headerAvatar');
+      const topAvatar = document.getElementById('topAvatar');
       if (userProfile.pictureUrl) {
-        avatar.innerHTML = `<img src="${userProfile.pictureUrl}" alt="avatar">`;
+        topAvatar.innerHTML = `<img src="${userProfile.pictureUrl}" alt="">`;
       }
-      document.getElementById('headerName').textContent = userProfile.displayName;
+      document.getElementById('topName').textContent = userProfile.displayName;
     } else {
       liff.login(); return;
     }
   } catch(e) {
-    console.warn('LIFF init failed:', e);
+    console.warn('LIFF init failed:',e);
     splashUser.textContent = '起動中...';
     liffReady = false;
   }
 
-  await wait(1200);
+  await wait(1400);
   splash.classList.add('fade');
-  setTimeout(() => splash.remove(), 700);
-  addSystemMsg('— 深夜2:00 —');
-  await wait(400);
-  showScene('start');
+  setTimeout(()=>splash.remove(), 700);
+}
+
+// ══════════════════════════════════════════════
+// 海面漂流ゲーム
+// ══════════════════════════════════════════════
+let oceanGL = null, oceanProg = null, oceanStartT = null;
+let oceanRAF = null, oceanTimerIval = null;
+let oScore=0, oTime=60, oCombo=0, oComboTmr=null, oRunning=false;
+let oItems=[], oParticles=[], oPopups=[], oRings=[];
+let oSpawnIval=2200, oLastSpawn=0;
+
+const OCEAN_VS = `#version 300 es
+in vec2 a_pos; out vec2 v_uv;
+void main(){ v_uv=a_pos*.5+.5; gl_Position=vec4(a_pos,0,1); }`;
+
+const OCEAN_FS = `#version 300 es
+precision highp float;
+in vec2 v_uv; out vec4 fragColor;
+uniform float u_time; uniform vec2 u_res;
+float hash(vec2 p){p=fract(p*vec2(443.897,441.423));p+=dot(p,p+19.19);return fract(p.x*p.y);}
+float vnoise(vec2 p){vec2 i=floor(p),f=fract(p),u=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1,0)),u.x),mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),u.x),u.y);}
+float fbm(vec2 p){float v=0.,a=.5;mat2 r=mat2(.8,.6,-.6,.8);for(int i=0;i<5;i++){v+=a*vnoise(p);p=r*p*2.;a*=.5;}return v;}
+vec3 gwave(vec2 uv,vec2 dir,float k,float spd,float amp,float t){float ph=dot(normalize(dir),uv)*k-t*spd;return vec3(normalize(dir)*k*amp*cos(ph),amp*sin(ph));}
+float caustic(vec2 p,float t){float a=fbm(p*2.5+vec2(t*.11,t*.07)),b=fbm(p*2.5+vec2(-t*.08,t*.10)+3.3);return pow(1.-smoothstep(0.,.20,abs(a-b)),3.);}
+void main(){
+  float asp=u_res.x/u_res.y; vec2 uv=(v_uv-.5)*vec2(asp,1.)*8.; float t=u_time*.45;
+  vec3 s=vec3(0.);
+  s+=gwave(uv,vec2(1.,.5),2.8,1.1,.05,t); s+=gwave(uv,vec2(-.5,1.),3.6,.9,.03,t);
+  s+=gwave(uv,vec2(.8,-.7),5.,1.4,.02,t); s+=gwave(uv,vec2(-1.,-.3),4.,1.,.02,t);
+  s+=gwave(uv,vec2(.3,1.),6.5,1.7,.01,t);
+  float sw=fbm(uv*.35+vec2(t*.05,t*.03))*2.-1.,swU=sw*.5+.5;
+  vec3 N=normalize(vec3(-s.x*1.5-sw*.10,-s.y*1.5,1.));
+  vec3 L=normalize(vec3(-.4,.3,1.)),H=normalize(L+vec3(0,0,1));
+  float NdotL=max(dot(N,L),0.),NdotH=max(dot(N,H),0.),spec=pow(NdotH,300.);
+  vec3 deep=vec3(0.,.16,.20),mid=vec3(0.,.38,.42),shallow=vec3(.05,.68,.62);
+  vec3 col=mix(deep,mid,clamp(swU*1.2,0.,1.)); col=mix(col,shallow,clamp(swU*.5,0.,1.));
+  float dv=fbm(uv*.15+vec2(t*.02,t*.015))*2.-1.; col=mix(col,deep,clamp(-dv*.35,0.,.45));
+  float caus=caustic(uv*.5+vec2(t*.04,t*.03),t); col+=caus*vec3(.05,.30,.26)*.6;
+  col+=NdotL*.04*vec3(.1,.6,.5); col+=spec*.45*vec3(1.,.97,.90);
+  float sp=pow(vnoise(uv*4.5+vec2(t*.4,t*.3)),16.); col+=sp*.50*vec3(.85,1.,.92);
+  float crestH=s.z+sw*.25,foam=smoothstep(.05,.12,crestH)*.28;
+  float stk=smoothstep(.82,.93,fbm(uv*1.6+vec2(t*.07,0.)))*(.14); foam=max(foam,stk);
+  col=mix(col,vec3(.85,.97,.95),foam);
+  vec2 vig=v_uv*2.-1.; col*=1.-dot(vig,vig)*.25;
+  col=pow(clamp(col,0.,1.),vec3(.9));
+  fragColor=vec4(col,1.);
+}`;
+
+const OCEAN_DEFS = [
+  {emoji:'🍾',pts:10,size:44,w:30},{emoji:'📦',pts:20,size:50,w:22},
+  {emoji:'🪣',pts:15,size:44,w:20},{emoji:'🗝️',pts:30,size:36,w:12},
+  {emoji:'💎',pts:50,size:40,w:6 },{emoji:'🪸',pts:25,size:46,w:10},
+  {emoji:'🦀',pts:-5,size:46,w:14,trap:true},{emoji:'⚓',pts:40,size:46,w:8},
+];
+function oPickDef(){
+  let r=Math.random()*OCEAN_DEFS.reduce((a,d)=>a+d.w,0);
+  for(const d of OCEAN_DEFS){r-=d.w;if(r<=0)return d;} return OCEAN_DEFS[0];
+}
+
+function initOceanGL(){
+  const cv = document.getElementById('oceanCanvas');
+  if(oceanGL) return; // already init
+  const g = cv.getContext('webgl2');
+  if(!g){ alert('WebGL2非対応です'); return; }
+  oceanGL = g;
+  function mkShader(type,src){
+    const s=g.createShader(type); g.shaderSource(s,src); g.compileShader(s);
+    if(!g.getShaderParameter(s,g.COMPILE_STATUS)) throw g.getShaderInfoLog(s); return s;
+  }
+  oceanProg = g.createProgram();
+  g.attachShader(oceanProg,mkShader(g.VERTEX_SHADER,OCEAN_VS));
+  g.attachShader(oceanProg,mkShader(g.FRAGMENT_SHADER,OCEAN_FS));
+  g.linkProgram(oceanProg); g.useProgram(oceanProg);
+  const vbo=g.createBuffer(); g.bindBuffer(g.ARRAY_BUFFER,vbo);
+  g.bufferData(g.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),g.STATIC_DRAW);
+  const aPos=g.getAttribLocation(oceanProg,'a_pos');
+  g.enableVertexAttribArray(aPos); g.vertexAttribPointer(aPos,2,g.FLOAT,false,0,0);
+}
+
+function resizeOcean(){
+  const cv=document.getElementById('oceanCanvas'),hd=document.getElementById('oceanHud');
+  cv.width=innerWidth; cv.height=innerHeight;
+  hd.width=innerWidth; hd.height=innerHeight;
+  if(oceanGL) oceanGL.viewport(0,0,innerWidth,innerHeight);
+}
+
+function oSpawnItem(){
+  if(!oRunning) return;
+  const def=oPickDef(),W=innerWidth,H=innerHeight,side=Math.floor(Math.random()*4);
+  let sx,sy;
+  if(side===0){sx=Math.random()*W;sy=-60;}
+  else if(side===1){sx=W+60;sy=Math.random()*H;}
+  else if(side===2){sx=Math.random()*W;sy=H+60;}
+  else{sx=-60;sy=Math.random()*H;}
+  const tx=W*(.15+Math.random()*.7),ty=H*(.15+Math.random()*.7);
+  const ang=Math.atan2(ty-sy,tx-sx)+(Math.random()-.5)*.7,spd=.5+Math.random()*.5;
+  oItems.push({def,x:sx,y:sy,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd,
+    bobPhase:Math.random()*Math.PI*2,rot:Math.random()*Math.PI*2,
+    rotSpd:(Math.random()-.5)*.012,alpha:0,alive:true,restTime:0,resting:false});
+}
+
+function oHandleTap(tx,ty){
+  if(!oRunning) return;
+  oRings.push({x:tx,y:ty,r:8,alpha:.7,color:'rgba(255,255,255,0.45)'});
+  for(const it of oItems){
+    if(!it.alive) continue;
+    if(Math.hypot(tx-it.x,ty-it.y)<it.def.size){
+      it.alive=false;
+      oCombo++; clearTimeout(oComboTmr);
+      oComboTmr=setTimeout(()=>oCombo=0,1600);
+      const mult=oCombo>=4?3:oCombo>=3?2:oCombo>=2?1.5:1;
+      const pts=Math.round(it.def.pts*mult);
+      oScore+=pts;
+      document.getElementById('oceanSv').textContent=oScore;
+      oBurst(it.x,it.y,it.def.trap?'#ff5555':'#40ffe0',12,it.def.emoji);
+      oRings.push({x:it.x,y:it.y,r:10,alpha:1,color:it.def.trap?'rgba(255,80,80,.8)':'rgba(0,240,180,.8)'});
+      oPopups.push({x:it.x,y:it.y-40,text:(pts>=0?'+':'')+pts+(oCombo>=2?` ×${mult}`:''),
+        color:it.def.trap?'#ff8888':pts>=50?'#ffd700':'#80ffe0',alpha:1,vy:-1.6});
+      if(oCombo>=2){
+        document.getElementById('oceanCn').textContent=mult+'';
+        const el=document.getElementById('oceanCombo');
+        el.style.transform='translate(-50%,-50%) scale(1)';
+        setTimeout(()=>el.style.transform='translate(-50%,-50%) scale(0)',700);
+      }
+      break;
+    }
+  }
+}
+
+function oBurst(x,y,color,n,txt){
+  for(let i=0;i<n;i++){
+    const a=Math.PI*2*i/n+Math.random()*.5,s=2+Math.random()*5;
+    oParticles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,alpha:1,size:4+Math.random()*7,color,life:.8+Math.random()*.3});
+  }
+  if(txt) oParticles.push({x,y,vy:-2.8,vx:(Math.random()-.5)*1.5,alpha:1,life:1.2,isText:true,text:txt});
+}
+
+function oShowResult(){
+  document.getElementById('oceanTap').style.display='none';
+  document.getElementById('oceanFsc').textContent=oScore;
+  const msgs=['🐟 海の神様に修行してもらおう...','🌊 なかなかの漁師！もう一回！','⚓ 海賊船長！見事な腕前！','🏆 海の王者！伝説の回収師！'];
+  document.getElementById('oceanRmsg').textContent=msgs[oScore>=600?3:oScore>=350?2:oScore>=180?1:0];
+  document.getElementById('oceanResultScr').style.display='flex';
+}
+
+function oStartGame(){
+  oScore=0;oTime=60;oCombo=0;
+  oItems=[];oParticles=[];oPopups=[];oRings=[];
+  oSpawnIval=2200;oLastSpawn=0;
+  document.getElementById('oceanSv').textContent='0';
+  document.getElementById('oceanTv').textContent='60';
+  document.getElementById('oceanStartScr').style.display='none';
+  document.getElementById('oceanResultScr').style.display='none';
+  document.getElementById('oceanTap').style.display='block';
+  oRunning=true;
+  clearInterval(oceanTimerIval);
+  oceanTimerIval=setInterval(()=>{
+    oTime--;
+    document.getElementById('oceanTv').textContent=oTime;
+    if(oTime<=0){clearInterval(oceanTimerIval);oRunning=false;oShowResult();}
+  },1000);
+  setTimeout(oSpawnItem,400);
+}
+
+function startOceanGame(){
+  document.getElementById('topScreen').classList.remove('active');
+  document.getElementById('oceanScreen').classList.add('active');
+  resizeOcean();
+  initOceanGL();
+  if(!oceanRAF) oceanRAF = requestAnimationFrame(oFrame);
+}
+
+const otap=document.getElementById('oceanTap');
+otap.addEventListener('click',e=>oHandleTap(e.clientX,e.clientY));
+otap.addEventListener('touchstart',e=>{e.preventDefault();for(const t of e.changedTouches)oHandleTap(t.clientX,t.clientY);},{passive:false});
+document.getElementById('oceanStartBtn').addEventListener('click',oStartGame);
+document.getElementById('oceanRetryBtn').addEventListener('click',oStartGame);
+
+function oFrame(ts){
+  oceanRAF=requestAnimationFrame(oFrame);
+  if(!oceanGL||!oceanProg) return;
+  if(!oceanStartT) oceanStartT=ts;
+  const t=(ts-oceanStartT)*.001;
+  const uT=oceanGL.getUniformLocation(oceanProg,'u_time');
+  const uR=oceanGL.getUniformLocation(oceanProg,'u_res');
+  oceanGL.uniform1f(uT,t); oceanGL.uniform2f(uR,innerWidth,innerHeight);
+  oceanGL.drawArrays(oceanGL.TRIANGLES,0,6);
+
+  const hd=document.getElementById('oceanHud'),hctx=hd.getContext('2d');
+  hctx.clearRect(0,0,hd.width,hd.height);
+
+  const now=performance.now();
+  if(oRunning&&now-oLastSpawn>oSpawnIval){
+    oSpawnItem();oLastSpawn=now;oSpawnIval=Math.max(900,oSpawnIval-12);
+  }
+
+  for(const it of oItems){
+    if(!it.alive) continue;
+    if(!it.resting){
+      it.x+=it.vx;it.y+=it.vy;it.vx*=.998;it.vy*=.998;
+      it.vx+=Math.sin(t*.8+it.bobPhase)*.008;it.vy+=Math.cos(t*.6+it.bobPhase)*.006;
+      it.alpha=Math.min(1,it.alpha+.028);
+      const cx=innerWidth/2,cy=innerHeight/2;
+      if(Math.hypot(it.x-cx,it.y-cy)<Math.min(cx,cy)*.85&&it.alpha>=1&&Math.hypot(it.vx,it.vy)<.4) it.resting=true;
+    } else { it.restTime+=16; if(it.restTime>4500) it.alive=false; }
+    if(it.x<-100||it.x>innerWidth+100||it.y<-100||it.y>innerHeight+100){it.alive=false;continue;}
+    it.rot+=it.rotSpd;
+    const bx=Math.cos(t*1.8+it.bobPhase)*2,by=Math.sin(t*2.1+it.bobPhase)*3.5;
+    hctx.save(); hctx.globalAlpha=it.alpha; hctx.translate(it.x+bx,it.y+by); hctx.rotate(it.rot);
+    hctx.save(); hctx.translate(4,5); hctx.globalAlpha=it.alpha*.25; hctx.filter='blur(4px)';
+    hctx.font=`${it.def.size}px serif`; hctx.textAlign='center'; hctx.textBaseline='middle';
+    hctx.fillStyle='rgba(0,20,20,.9)'; hctx.fillText(it.def.emoji,0,0); hctx.restore();
+    if(it.def.pts>=30){
+      const pulse=.7+Math.sin(t*3+it.bobPhase)*.3;
+      const gr=hctx.createRadialGradient(0,0,0,0,0,it.def.size*.85);
+      gr.addColorStop(0,`rgba(0,255,200,${.20*pulse})`); gr.addColorStop(1,'rgba(0,0,0,0)');
+      hctx.fillStyle=gr; hctx.beginPath(); hctx.arc(0,0,it.def.size*.85,0,Math.PI*2); hctx.fill();
+    }
+    hctx.globalAlpha=it.alpha*.28; hctx.strokeStyle='rgba(120,255,220,0.55)'; hctx.lineWidth=1.2;
+    const wr=(Math.sin(t*1.8+it.bobPhase)+1.6)*it.def.size*.40;
+    hctx.beginPath(); hctx.ellipse(0,4,wr,wr*.28,0,0,Math.PI*2); hctx.stroke();
+    hctx.globalAlpha=it.alpha; hctx.font=`${it.def.size}px serif`;
+    hctx.textAlign='center'; hctx.textBaseline='middle'; hctx.fillText(it.def.emoji,0,0);
+    hctx.restore();
+  }
+  oItems=oItems.filter(i=>i.alive);
+
+  for(const r of oRings){
+    r.r+=3;r.alpha-=.026;
+    hctx.save();hctx.globalAlpha=Math.max(0,r.alpha);hctx.strokeStyle=r.color;hctx.lineWidth=1.5;
+    hctx.beginPath();hctx.arc(r.x,r.y,r.r,0,Math.PI*2);hctx.stroke();
+    if(r.r>24){hctx.globalAlpha=Math.max(0,r.alpha*.4);hctx.beginPath();hctx.arc(r.x,r.y,r.r*.55,0,Math.PI*2);hctx.stroke();}
+    hctx.restore();
+  }
+  oRings=oRings.filter(r=>r.alpha>0);
+
+  for(const p of oParticles){
+    hctx.save();hctx.globalAlpha=Math.max(0,p.alpha);
+    if(p.isText){hctx.font='bold 21px Georgia,serif';hctx.textAlign='center';hctx.textBaseline='middle';hctx.fillStyle='#fff';hctx.fillText(p.text,p.x,p.y);}
+    else{hctx.fillStyle=p.color;hctx.beginPath();hctx.arc(p.x,p.y,p.size*.5,0,Math.PI*2);hctx.fill();}
+    hctx.restore();
+    p.x+=p.vx;p.y+=p.vy;p.vy+=.12;p.vx*=.96;p.alpha-=.016/p.life;
+  }
+  oParticles=oParticles.filter(p=>p.alpha>0);
+
+  hctx.save();hctx.textAlign='center';hctx.textBaseline='middle';
+  for(const p of oPopups){
+    hctx.globalAlpha=Math.max(0,p.alpha);hctx.font='bold 25px Georgia,serif';
+    hctx.strokeStyle='rgba(0,0,0,.6)';hctx.lineWidth=3;hctx.strokeText(p.text,p.x,p.y);
+    hctx.fillStyle=p.color;hctx.fillText(p.text,p.x,p.y);
+    p.y+=p.vy;p.alpha-=.018;
+  }
+  hctx.restore();
+  oPopups=oPopups.filter(p=>p.alpha>0);
 }
 
 window.addEventListener('DOMContentLoaded', initLiff);
+
+// backToTop で海面ゲーム画面にも対応
+const _origBackToTop = backToTop;
+backToTop = function(){
+  if(document.getElementById('oceanScreen').classList.contains('active')){
+    oRunning=false; clearInterval(oceanTimerIval);
+    document.getElementById('oceanScreen').classList.remove('active');
+    document.getElementById('topScreen').classList.add('active');
+    document.getElementById('oceanStartScr').style.display='flex';
+    document.getElementById('oceanResultScr').style.display='none';
+    document.getElementById('oceanTap').style.display='none';
+    return;
+  }
+  _origBackToTop();
+};
 </script>
 </body>
 </html>
